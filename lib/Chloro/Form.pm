@@ -24,6 +24,26 @@ has ignore_empty_fields =>
       default => 1,
     );
 
+
+sub add_field_group
+{
+    my $self  = shift;
+    my $group = shift;
+
+    $self->current_fieldset()
+         ->add_field_group($group);
+}
+
+sub add_field
+{
+    my $self  = shift;
+    my $field = shift;
+
+    $self->current_fieldset()
+         ->current_group()
+         ->add_field($field);
+}
+
 no Moose;
 
 __PACKAGE__->meta()->make_immutable();

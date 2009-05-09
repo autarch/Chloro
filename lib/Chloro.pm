@@ -38,6 +38,7 @@ sub fieldset
 
     Moose::Meta::Class
         ->initialize($caller)
+        ->form()
         ->add_fieldset($fieldset);
 }
 
@@ -50,6 +51,7 @@ sub group
 
     Moose::Meta::Class
         ->initialize($caller)
+        ->form()
         ->add_field_group($group);
 }
 
@@ -60,9 +62,30 @@ sub field
 
     Moose::Meta::Class
         ->initialize($caller)
+        ->form()
         ->add_field( Chloro::Field->new( name => $name, @_ ) );
 
     return;
+}
+
+sub include
+{
+    my $caller = shift;
+    my $thing  = shift;
+
+    my @sets;
+    if ( ref $thing )
+    {
+        @sets = $thing->fieldsets();
+    }
+    else
+    {
+        Class::MOP::load_class($thing);
+        @sets = $thing->form()->fieldsets();
+    }
+
+    my $meta = Moose::Meta::Class->initialize($caller);
+    $meta->form()->add_fieldset($_) for @sets;
 }
 
 sub dependency
@@ -73,8 +96,6 @@ sub dependency
     Moose::Meta::Class
         ->initialize($caller)
         ->form()
-        ->current_fieldset()
-        ->current_group()
         ->add_dependency(@_);
 
     return;

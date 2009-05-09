@@ -13,8 +13,10 @@ has name =>
     );
 
 has label =>
-    ( is  => 'ro',
-      isa => NonEmptyStr,
+    ( is      => 'ro',
+      isa     => NonEmptyStr,
+      lazy    => 1,
+      default => sub { $_[0]->name() },
     );
 
 # has type =>

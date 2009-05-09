@@ -28,7 +28,8 @@ has _fields =>
       is        => 'ro',
       isa       => ArrayRef['Chloro::Field'],
       default   => sub { [] },
-      provides  => { push => 'add_field',
+      provides  => { elements => 'fields',
+                     push => 'add_field',
                    },
     );
 

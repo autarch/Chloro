@@ -11,3 +11,8 @@ use Test::More 'no_plan';
     field 'foo';
     field 'bar';
 }
+
+{
+    ok( Simple->isa('Chloro::Object'),
+        'Simple subclasses Chloro::Object after use Chloro' );
+}

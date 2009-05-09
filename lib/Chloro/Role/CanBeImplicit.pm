@@ -3,6 +3,8 @@ package Chloro::Role::CanBeImplicit;
 use strict;
 use warnings;
 
+use MooseX::Types::Moose qw( Bool );
+
 use Moose::Role;
 
 has is_implicit =>

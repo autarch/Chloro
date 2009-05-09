@@ -3,9 +3,11 @@ package Chloro::FieldGroup;
 use strict;
 use warnings;
 
+use Chloro::Types qw( :all );
+use MooseX::Types::Moose qw( ArrayRef Int );
+
 use Moose;
 use MooseX::AttributeHelpers;
-use Chloro::Types;
 
 with 'Chloro::Role::CanBeImplicit';
 
@@ -25,7 +27,8 @@ has _fields =>
     ( metaclass => 'Collection::Array',
       is        => 'ro',
       isa       => ArrayRef['Chloro::Field'],
-      provides  => { push => '_add_field',
+      default   => sub { [] },
+      provides  => { push => 'add_field',
                    },
     );
 

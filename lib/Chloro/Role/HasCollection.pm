@@ -3,21 +3,24 @@ package Chloro::Role::HasCollection;
 use strict;
 use warnings;
 
+use Chloro::Types qw( :all );
+use MooseX::Types::Moose qw( Str );
+use Tie::IxHash;
+
 use MooseX::Role::Parameterized;
-use Chloro::Types;
 
-param 'container' =>
+parameter container =>
     ( isa      => Str,
       required => 1,
     );
 
-param 'thing' =>
+parameter thing =>
     ( isa      => Str,
       required => 1,
     );
 
-param 'class' =>
-    ( isa      => ClassDoesImplicit,
+parameter class =>
+    ( does     => ClassDoesImplicit,
       required => 1,
     );
 
@@ -25,7 +28,7 @@ role
 {
     my $p = shift;
 
-    my $conatiner = $p->container();
+    my $container = $p->container();
     my $thing     = $p->thing();
     my $plural    = $thing . 's';
 
@@ -38,10 +41,10 @@ role
         ( is      => 'ro',
           isa     => 'Tie::IxHash',
           default => sub { Tie::IxHash->new() },
-          handles => { $add     => 'Push',
+          handles => { $add            => 'Push',
                        'get_' . $thing => 'FETCH',
                        'has_' . $thing => 'EXISTS',
-                       $has_any => 'Length',
+                       $has_any        => 'Length',
                      },
         );
 
@@ -70,13 +73,13 @@ role
                                         is_implicit => 1,
                                       );
 
-            $self->$add($implicit);
+            $self->$add( $implicit->name() => $implicit );
         }
 
         return $self->$collection()->Values(-1);
     };
-}
+};
 
-no Moose::Role;
+no MooseX::Role::Parameterized;
 
 1;

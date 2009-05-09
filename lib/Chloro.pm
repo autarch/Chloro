@@ -11,7 +11,7 @@ use Moose::Exporter;
 use Moose::Meta::Class;
 
 Moose::Exporter->setup_import_methods
-    ( with_caller => [ qw( field dependency ) ],
+    ( with_caller => [ qw( fieldset group field dependency ) ],
     );
 
 
@@ -20,7 +20,7 @@ sub init_meta
     shift;
     my %p = @_;
 
-    Moose->init_meta( %p, base_object_class => 'Chloro::Object' );
+    Moose->init_meta( %p, base_class => 'Chloro::Object' );
 
     return
         Moose::Util::MetaRole::apply_metaclass_roles
@@ -36,7 +36,9 @@ sub fieldset
 
     my $fieldset = Chloro::FieldSet->new( name => $name );
 
-    Moose::Meta::Class->initialize($caller)->add_fieldset($fieldset);
+    Moose::Meta::Class
+        ->initialize($caller)
+        ->add_fieldset($fieldset);
 }
 
 sub group
@@ -48,8 +50,6 @@ sub group
 
     Moose::Meta::Class
         ->initialize($caller)
-        ->form()
-        ->current_fieldset()
         ->add_field_group($group);
 }
 
@@ -60,10 +60,7 @@ sub field
 
     Moose::Meta::Class
         ->initialize($caller)
-        ->form()
-        ->current_fieldset()
-        ->current_group()
-        ->add_field( Chloro::Field->new(@_) );
+        ->add_field( Chloro::Field->new( name => $name, @_ ) );
 
     return;
 }

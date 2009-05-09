@@ -3,8 +3,8 @@ package Chloro::Field;
 use strict;
 use warnings;
 
+use Chloro::Types qw( :all );
 use Moose;
-use Chloro::Types;
 
 has name =>
     ( is       => 'ro',

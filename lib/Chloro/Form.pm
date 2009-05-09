@@ -3,8 +3,14 @@ package Chloro::Form;
 use strict;
 use warnings;
 
+use Chloro::FieldSet;
+use Chloro::Types qw( :all );
+use MooseX::Types::Moose qw( Bool );
+
 use Moose;
 use MooseX::SemiAffordanceAccessor;
+
+with 'MooseX::Clone';
 
 with 'Chloro::Role::HasCollection' =>
     { container => 'form',

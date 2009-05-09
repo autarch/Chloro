@@ -1,10 +1,11 @@
-package Chloro::Fieldset;
+package Chloro::FieldSet;
 
 use strict;
 use warnings;
 
+use Chloro::FieldGroup;
+use Chloro::Types qw( :all );
 use Moose;
-use Chloro::Types;
 
 with 'Chloro::Role::CanBeImplicit';
 

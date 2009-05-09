@@ -3,22 +3,23 @@ package Chloro::Object;
 use strict;
 use warnings;
 
+use Chloro::Types qw( :all );
+use MooseX::Types::Moose qw( HashRef );
+
 use Moose;
 
-extends 'Moose::Object';
+has 'params' =>
+    ( is      => 'ro',
+      isa     => HashRef,
+      default => sub { {} },
+    );
 
-
-sub BUILDARGS
-{
-    my $class = shift;
-
-    my $params = $class->SUPER::BUILDARGS(@_);
-
-    $class->_delete_empty_fields($params)
-        if $class->meta()->ignore_empty_fields();
-
-    return $params;
-}
+has 'form' =>
+    ( is       => 'ro',
+      isa      => 'Chloro::Form',
+      default  => sub { $_[0]->meta()->form()->clone() },
+      init_arg => undef,
+    );
 
 # Don't want to have subclasses inheirt this.
 my $string_is_empty = sub { ! ( defined $_[0] && length $_[0] ) };
@@ -37,6 +38,6 @@ sub _delete_empty_fields
 
 no Moose;
 
-__PACKAGE__->meta()->make_immutable( inline_constructor => 0 );
+__PACKAGE__->meta()->make_immutable();
 
 1;

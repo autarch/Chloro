@@ -4,7 +4,9 @@ use strict;
 use warnings;
 
 use Chloro::Types qw( :all );
+
 use Moose;
+use MooseX::StrictConstructor;
 
 has name =>
     ( is       => 'ro',

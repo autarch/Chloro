@@ -5,10 +5,12 @@ use warnings;
 
 use Chloro::FieldSet;
 use Chloro::Types qw( :all );
+use Moose;
+use MooseX::Params::Validate qw( pos_validated_list );
+use MooseX::SemiAffordanceAccessor;
+use MooseX::StrictConstructor;
 use MooseX::Types::Moose qw( Bool );
 
-use Moose;
-use MooseX::SemiAffordanceAccessor;
 
 with 'MooseX::Clone';
 
@@ -42,6 +44,14 @@ sub add_field
     $self->current_fieldset()
          ->current_group()
          ->add_field($field);
+}
+
+sub include_form
+{
+    my $self    = shift;
+    my ($form) = pos_validated_list( \@_, { isa => 'Chloro::Form' } );
+
+    $self->add_fieldset($_) for $form->fieldsets();
 }
 
 no Moose;

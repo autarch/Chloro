@@ -5,7 +5,10 @@ use warnings;
 
 use Chloro::FieldGroup;
 use Chloro::Types qw( :all );
+
 use Moose;
+use MooseX::StrictConstructor;
+
 
 with 'Chloro::Role::CanBeImplicit';
 

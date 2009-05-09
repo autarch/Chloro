@@ -8,6 +8,7 @@ use MooseX::Types::Moose qw( ArrayRef Int );
 
 use Moose;
 use MooseX::AttributeHelpers;
+use MooseX::StrictConstructor;
 
 with 'Chloro::Role::CanBeImplicit';
 

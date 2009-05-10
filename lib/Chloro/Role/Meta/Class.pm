@@ -13,36 +13,6 @@ has form =>
     );
 
 
-sub add_fieldset
-{
-    my $self     = shift;
-    my $fieldset = shift;
-
-    $self->form()
-         ->add_fieldset($fieldset);
-}
-
-sub add_field_group
-{
-    my $self  = shift;
-    my $group = shift;
-
-    $self->form()
-         ->current_fieldset()
-         ->add_field_group($group);
-}
-
-sub add_field
-{
-    my $self  = shift;
-    my $field = shift;
-
-    $self->form()
-         ->current_fieldset()
-         ->current_group()
-         ->add_field($field);
-}
-
 no Moose::Role;
 
 1;

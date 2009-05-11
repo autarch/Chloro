@@ -44,6 +44,6 @@ use Chloro::FieldSet;
     $fs1->add_group($foo_fg);
 
     throws_ok( sub { $fs1->add_group($foo_fg) },
-               qr/\QCannot add a group (foo) to this fieldset because it already has a group of the same name./,
+               qr/\QCannot add a Chloro::FieldGroup (foo) because we already have a Chloro::FieldGroup of the same name./,
                'cannot add two groups with the same name' );
 }

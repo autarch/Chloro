@@ -4,10 +4,10 @@ use strict;
 use warnings;
 
 use Chloro::Types qw( :all );
+use Chloro::UniqueNamedObjectArray;
+use MooseX::Role::Parameterized;
 use MooseX::Types::Moose qw( Str );
 use Tie::IxHash;
-
-use MooseX::Role::Parameterized;
 
 parameter container =>
     ( isa      => Str,
@@ -38,20 +38,22 @@ role
     my $get         = 'get_' . $thing;
     my $has_any     = '_has_' . $plural;
     my $current     = 'current_' . $thing;
+    my $last_object = '_last_' . $thing;
 
     has $collection =>
         ( is      => 'ro',
-          isa     => 'Tie::IxHash',
-          default => sub { Tie::IxHash->new() },
-          handles => { $plural         => 'Values',
-                       $private_add    => 'STORE',
-                       $get            => 'FETCH',
-                       'has_' . $thing => 'EXISTS',
-                       $has_any        => 'Length',
+          isa     => 'Chloro::UniqueNamedObjectArray',
+          default => sub { Chloro::UniqueNamedObjectArray->new() },
+          handles => { $plural         => 'objects',
+                       $add            => 'add_object',
+                       $get            => 'get_object',
+                       'has_' . $thing => 'has_object',
+                       $has_any        => 'has_objects',
+                       $last_object    => 'last_object',
                      },
         );
 
-    method $add => sub
+    before $add => sub
     {
         my $self      = shift;
         my $new_thing = shift;
@@ -62,16 +64,6 @@ role
                 . " to a $container with an implicit $thing.\n"
                 . " Please declare all your $plural explicitly.\n";
         }
-
-        if ( $self->$get( $new_thing->name() ) )
-        {
-            die "Cannot add a $thing (" . $new_thing->name() . ")"
-                . " to this $container because it already has a $thing"
-                . " of the same name.\n";
-        }
-
-
-        $self->$private_add( $new_thing->name() => $new_thing );
     };
 
     my $class = $p->class();
@@ -89,7 +81,7 @@ role
             $self->$add($implicit);
         }
 
-        return $self->$collection()->Values(-1);
+        return $self->$last_object();
     };
 };
 

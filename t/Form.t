@@ -61,6 +61,6 @@ use Chloro::Form;
     $form1->add_fieldset($foo_fs);
 
     throws_ok( sub { $form1->add_fieldset($foo_fs) },
-               qr/\QCannot add a fieldset (foo) to this form because it already has a fieldset of the same name./,
+               qr/\QCannot add a Chloro::FieldSet (foo) because we already have a Chloro::FieldSet of the same name./,
                'cannot add two fieldsets with the same name' );
 }

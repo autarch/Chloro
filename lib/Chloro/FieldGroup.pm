@@ -3,12 +3,12 @@ package Chloro::FieldGroup;
 use strict;
 use warnings;
 
-use Chloro::Types qw( :all );
-use MooseX::Types::Moose qw( ArrayRef Int );
-
+use Chloro::Types qw( NonEmptyStr );
+use Chloro::UniqueNamedObjectArray;
 use Moose;
 use MooseX::AttributeHelpers;
 use MooseX::StrictConstructor;
+use MooseX::Types::Moose qw( Int );
 
 with 'Chloro::Role::CanBeImplicit';
 
@@ -25,13 +25,14 @@ has repeat_count =>
     );
 
 has _fields =>
-    ( metaclass => 'Collection::Array',
-      is        => 'ro',
-      isa       => ArrayRef['Chloro::Field'],
-      default   => sub { [] },
-      provides  => { elements => 'fields',
-                     push => 'add_field',
-                   },
+    ( is      => 'ro',
+      isa     => 'Chloro::UniqueNamedObjectArray',
+      default => sub { Chloro::UniqueNamedObjectArray->new() },
+      handles => { fields    => 'objects',
+                   add_field => 'add_object',
+                   get_field => 'get_object',
+                   has_field => 'has_object',
+                 },
     );
 
 no Moose;

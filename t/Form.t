@@ -5,11 +5,12 @@ use Test::Exception;
 use Test::More 'no_plan';
 
 use Chloro::FieldSet;
-use Chloro::Form;
+use Chloro::Form::Abstract;
+use Chloro::Form::Concrete;
 
 
 {
-    my $form = Chloro::Form->new();
+    my $form = Chloro::Form::Abstract->new();
 
     my $fs = $form->current_fieldset();
     isa_ok( $fs, 'Chloro::FieldSet',
@@ -17,32 +18,32 @@ use Chloro::Form;
     ok( $fs->is_implicit(),
         'calling current_fieldset makes an implicit fieldset if needed' );
 
-    throws_ok( sub { $form->add_fieldset( Chloro::FieldSet->new( name => 'foo' ) ) },
+    throws_ok( sub { $form->add_fieldset( Chloro::FieldSet::Abstract->new( name => 'foo' ) ) },
                qr/\QCannot add a fieldset (foo) to a form with an implicit fieldset/,
                'cannot add a fieldset to a form with an implicit fieldset' );
 }
 
 {
-    my $form = Chloro::Form->new();
+    my $form = Chloro::Form::Abstract->new();
 
-    $form->add_fieldset( Chloro::FieldSet->new( name => 'foo' ) );
+    $form->add_fieldset( Chloro::FieldSet::Abstract->new( name => 'foo' ) );
     my $fs = $form->current_fieldset();
     isa_ok( $fs, 'Chloro::FieldSet',
             'current_fieldset' );
     is( $fs->name(), 'foo',
         'current_fieldset returns a non-implicit set if we have one' );
 
-    $form->add_fieldset( Chloro::FieldSet->new( name => 'bar' ) );
+    $form->add_fieldset( Chloro::FieldSet::Abstract->new( name => 'bar' ) );
     is( $form->current_fieldset()->name(), 'bar',
         'current_fieldset returns most recently added set' );
 }
 
 {
-    my $form1 = Chloro::Form->new();
-    $form1->add_fieldset( Chloro::FieldSet->new( name => 'foo' ) );
+    my $form1 = Chloro::Form::Abstract->new();
+    $form1->add_fieldset( Chloro::FieldSet::Abstract->new( name => 'foo' ) );
 
-    my $form2 = Chloro::Form->new();
-    $form1->add_fieldset( Chloro::FieldSet->new( name => 'bar' ) );
+    my $form2 = Chloro::Form::Abstract->new();
+    $form1->add_fieldset( Chloro::FieldSet::Abstract->new( name => 'bar' ) );
 
     $form1->include_form($form2);
 
@@ -55,12 +56,58 @@ use Chloro::Form;
 }
 
 {
-    my $form1 = Chloro::Form->new();
-    my $foo_fs = Chloro::FieldSet->new( name => 'foo' );
+    my $form1 = Chloro::Form::Abstract->new();
+    my $foo_fs1 = Chloro::FieldSet::Abstract->new( name => 'foo' );
+    my $foo_fs2 = Chloro::FieldSet::Abstract->new( name => 'foo' );
 
-    $form1->add_fieldset($foo_fs);
+    $form1->add_fieldset($foo_fs1);
 
-    throws_ok( sub { $form1->add_fieldset($foo_fs) },
-               qr/\QCannot add a Chloro::FieldSet (foo) because we already have a Chloro::FieldSet of the same name./,
+    throws_ok( sub { $form1->add_fieldset($foo_fs2) },
+               qr/\QCannot add a Chloro::FieldSet::Abstract (foo) because we already have a Chloro::FieldSet::Abstract of the same name./,
                'cannot add two fieldsets with the same name' );
+}
+
+{
+    my $form = Chloro::Form::Abstract->new();
+
+    $form->add_field( Chloro::Field->new( name => 'foo' ) );
+    $form->add_field( Chloro::Field->new( name => 'bar' ) );
+
+    my @fields = $form->fields();
+    is( scalar @fields, 2, 'can get fields directly from simple form' );
+}
+
+
+{
+    my $form = Chloro::Form::Abstract->new();
+
+    $form->add_fieldset( Chloro::FieldSet::Abstract->new( name => 'foo' ) );
+
+    throws_ok( sub { $form->fields() },
+               qr/\QCannot call fields() on a form with named fieldsets/,
+               'cannot call fields on a form with a named fieldset' );
+}
+
+{
+    my $form = Chloro::Form::Abstract->new();
+
+    throws_ok( sub { $form->add_group( Chloro::FieldGroup::Abstract->new( name => 'foo' ) ) },
+               qr/\QCannot add a named group to an implicit fieldset/,
+               'cannot add a named group to an implicit fieldset' );
+}
+
+{
+    my $form = Chloro::Form::Abstract->new();
+
+    $form->add_fieldset( Chloro::FieldSet::Abstract->new( name => 'Foo' ) );
+    $form->add_group( Chloro::FieldGroup::Abstract->new( name => 'foo1' ), max_repeats => undef );
+    $form->add_field( Chloro::Field::Abstract->new( name => 'a1' ) );
+    $form->add_field( Chloro::Field::Abstract->new( name => 'a2' ) );
+    $form->add_field( Chloro::Field::Abstract->new( name => 'a3' ) );
+
+    $form->add_fieldset( Chloro::FieldSet::Abstract->new( name => 'Bar' ) );
+    $form->add_field( Chloro::Field::Abstract->new( name => 'b1' ) );
+    $form->add_field( Chloro::Field::Abstract->new( name => 'b2' ) );
+
+    my $conc = $form->as_concrete( repeats => { foo1 => [ qw( X Y ) ] } );
 }

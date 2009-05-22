@@ -3,6 +3,7 @@ package Chloro::Role::HasCollection;
 use strict;
 use warnings;
 
+use Carp qw( confess );
 use Chloro::Types qw( :all );
 use Chloro::UniqueNamedObjectArray;
 use MooseX::Role::Parameterized;
@@ -41,16 +42,17 @@ role
     my $last_object = '_last_' . $thing;
 
     has $collection =>
-        ( is      => 'ro',
-          isa     => 'Chloro::UniqueNamedObjectArray',
-          default => sub { Chloro::UniqueNamedObjectArray->new() },
-          handles => { $plural         => 'objects',
-                       $add            => 'add_object',
-                       $get            => 'get_object',
-                       'has_' . $thing => 'has_object',
-                       $has_any        => 'has_objects',
-                       $last_object    => 'last_object',
-                     },
+        ( is       => 'ro',
+          isa      => 'Chloro::UniqueNamedObjectArray',
+          default  => sub { Chloro::UniqueNamedObjectArray->new() },
+          handles  => { $plural         => 'objects',
+                        $add            => 'add_object',
+                        $get            => 'get_object',
+                        'has_' . $thing => 'has_object',
+                        $has_any        => 'has_objects',
+                        $last_object    => 'last_object',
+                      },
+          init_arg => undef,
         );
 
     before $add => sub
@@ -60,10 +62,33 @@ role
 
         if ( $self->$has_any() && $self->$current()->is_implicit() )
         {
-            die "Cannot add a $thing (" . $new_thing->name() . ")"
-                . " to a $container with an implicit $thing.\n"
-                . " Please declare all your $plural explicitly.\n";
+            confess "Cannot add a $thing (" . $new_thing->name() . ")"
+                  . " to a $container with an implicit $thing.\n"
+                  . " Please declare all your $plural explicitly.\n";
         }
+
+        if (    $self->does('Chloro::Role::CanBeImplicit')
+             && $new_thing->does('Chloro::Role::CanBeImplicit')
+             && $self->is_implicit()
+             && ! $new_thing->is_implicit() )
+        {
+            confess "Cannot add a named $thing to an implicit $container";
+        }
+
+        if ( $new_thing->$container() )
+        {
+            confess "Cannot add a $thing that already has a $container";
+        }
+    };
+
+    my $set_parent = 'set_' . $container;
+
+    after $add => sub
+    {
+        my $self      = shift;
+        my $new_thing = shift;
+
+        $new_thing->$set_parent($self);
     };
 
     my $class = $p->class();

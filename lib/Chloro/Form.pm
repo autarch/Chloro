@@ -3,6 +3,7 @@ package Chloro::Form;
 use strict;
 use warnings;
 
+use Carp qw( croak );
 use Chloro::FieldSet;
 use Chloro::Types qw( :all );
 use Moose;
@@ -11,29 +12,13 @@ use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 use MooseX::Types::Moose qw( Bool );
 
-
-with 'MooseX::Clone';
-
-with 'Chloro::Role::HasCollection' =>
-    { container => 'form',
-      thing     => 'fieldset',
-      class     => 'Chloro::FieldSet',
-    };
-
-has ignore_empty_fields =>
-    ( is      => 'rw',
-      isa     => Bool,
-      default => 1,
-    );
-
-
-sub add_field_group
+sub add_group
 {
     my $self  = shift;
     my $group = shift;
 
     $self->current_fieldset()
-         ->add_field_group($group);
+         ->add_group($group);
 }
 
 sub add_field
@@ -48,10 +33,23 @@ sub add_field
 
 sub include_form
 {
-    my $self    = shift;
+    my $self   = shift;
     my ($form) = pos_validated_list( \@_, { isa => 'Chloro::Form' } );
 
     $self->add_fieldset($_) for $form->fieldsets();
+}
+
+sub fields
+{
+    my $self = shift;
+
+    my @fs = $self->fieldsets();
+    croak 'Cannot call fields() on a form with named fieldsets'
+        if @fs > 1 || ! $fs[0]->is_implicit();
+
+    my @fg = $fs[0]->groups();
+
+    return $fg[0]->fields();
 }
 
 no Moose;

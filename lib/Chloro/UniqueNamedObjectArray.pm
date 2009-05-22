@@ -3,6 +3,7 @@ package Chloro::UniqueNamedObjectArray;
 use strict;
 use warnings;
 
+use Carp qw( confess );
 use Chloro::Types qw( NamedObject );
 use Moose;
 use MooseX::Params::Validate qw( pos_validated_list );
@@ -17,7 +18,7 @@ has _objects =>
                    has_object  => 'EXISTS',
                    has_objects => 'Length',
                  },
-        );
+    );
 
 sub add_object
 {
@@ -27,9 +28,9 @@ sub add_object
     if ( $self->has_object( $object->name() ) )
     {
         my $type = ref $object;
-        die "Cannot add a $type (" . $object->name() . ")"
-            . " because we already have a $type"
-            . " of the same name.\n";
+        confess "Cannot add a $type (" . $object->name() . ")"
+                . " because we already have a $type"
+                . " of the same name.\n";
     }
 
     $self->_add_object( $object->name() => $object );

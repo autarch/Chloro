@@ -59,11 +59,14 @@ sub field
 {
     my $caller = shift;
     my $name   = shift;
+    my %p      = @_;
+
+    $p{is_required} = delete $p{required};
 
     Moose::Meta::Class
         ->initialize($caller)
         ->form()
-        ->add_field( Chloro::Field->new( name => $name, @_ ) );
+        ->add_field( Chloro::Field->new( name => $name, %p ) );
 
     return;
 }

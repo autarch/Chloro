@@ -5,7 +5,11 @@ use warnings;
 
 use MooseX::Types::Moose ':all';
 use MooseX::Types
-    -declare => [ qw( ClassDoesImplicit NonEmptyStr NamedObject ) ];
+    -declare => [ qw( ClassDoesImplicit
+                      NonEmptyStr
+                      NamedObject
+                      ValidFieldType
+                    ) ];
 
 subtype ClassDoesImplicit,
     as Any,
@@ -21,5 +25,10 @@ subtype NamedObject,
     as Object,
     where { $_[0]->can('name') },
     message { 'Must be an object with a name() method' };
+
+subtype ValidFieldType,
+    as Object,
+    where { $_[0]->can('check') },
+    message { 'Must be a type constraint object with a check() method' };
 
 1;

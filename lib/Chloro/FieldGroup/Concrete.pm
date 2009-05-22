@@ -3,6 +3,7 @@ package Chloro::FieldGroup::Concrete;
 use strict;
 use warnings;
 
+use Carp qw( croak );
 use Chloro::Types qw( NonEmptyStr );
 use Moose;
 use MooseX::SemiAffordanceAccessor;
@@ -35,11 +36,24 @@ has repeat_id =>
 
 has '+fieldset' => ( isa => 'Chloro::FieldSet::Concrete' );
 
+
+sub BUILD
+{
+    my $self = shift;
+
+    if (    $self->is_implicit()
+         && ! length $self->repeat_id() )
+    {
+        local $Carp::CarpLevel = $Carp::CarpLevel + 1;
+        croak "Cannot create a named concrete group without a reapeat_id";
+    }
+}
+
 sub _build_name
 {
     my $self = shift;
 
-    return $self->base_name() if $self->is_implicit();
+    return '__IMPLICIT__' if $self->is_implicit();
 
     return join q{.}, $self->base_name(), $self->repeat_id();
 }

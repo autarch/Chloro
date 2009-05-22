@@ -33,6 +33,9 @@ sub as_concrete
     {
         my @ids = @{ $p{repeats}{ $group->name() } || [] };
 
+        @ids = '__IMPLICIT__'
+            unless @ids;
+
         croak 'Cannot repeat the ' . $group->name() . ' group'
             if @ids > 1 && ! $group->can_repeat();
 

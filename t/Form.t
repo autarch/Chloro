@@ -4,9 +4,9 @@ use warnings;
 use Test::Exception;
 use Test::More 'no_plan';
 
-use Chloro::FieldSet;
+use Chloro::FieldGroup::Abstract;
+use Chloro::FieldSet::Abstract;
 use Chloro::Form::Abstract;
-use Chloro::Form::Concrete;
 
 
 {
@@ -94,20 +94,4 @@ use Chloro::Form::Concrete;
     throws_ok( sub { $form->add_group( Chloro::FieldGroup::Abstract->new( name => 'foo' ) ) },
                qr/\QCannot add a named group to an implicit fieldset/,
                'cannot add a named group to an implicit fieldset' );
-}
-
-{
-    my $form = Chloro::Form::Abstract->new();
-
-    $form->add_fieldset( Chloro::FieldSet::Abstract->new( name => 'Foo' ) );
-    $form->add_group( Chloro::FieldGroup::Abstract->new( name => 'foo1' ), max_repeats => undef );
-    $form->add_field( Chloro::Field::Abstract->new( name => 'a1' ) );
-    $form->add_field( Chloro::Field::Abstract->new( name => 'a2' ) );
-    $form->add_field( Chloro::Field::Abstract->new( name => 'a3' ) );
-
-    $form->add_fieldset( Chloro::FieldSet::Abstract->new( name => 'Bar' ) );
-    $form->add_field( Chloro::Field::Abstract->new( name => 'b1' ) );
-    $form->add_field( Chloro::Field::Abstract->new( name => 'b2' ) );
-
-    my $conc = $form->as_concrete( repeats => { foo1 => [ qw( X Y ) ] } );
 }

@@ -35,9 +35,13 @@ role
 
     my $name_map = $p->name_map();
 
+    my %predicates;
     my @copyable;
     for my $attr ( $metaclass->get_all_attributes() )
     {
+        $predicates{ $attr->name() } = $attr->predicate()
+            if $attr->has_predicate();
+
         next if exists $name_map->{ $attr->name() };
         next if ! defined $attr->init_arg();
         next if ! $concrete_meta->find_attribute_by_name( $attr->name() );
@@ -49,7 +53,15 @@ role
     {
         my $self = shift;
 
-        my %args = map { $name_map->{$_} => $self->$_() } keys %{ $name_map };
+        my %args;
+
+        for my $source_attr ( keys %{ $name_map } )
+        {
+            my $pred = $predicates{$source_attr};
+            next if $pred && ! $self->$pred();
+
+            $args{ $name_map->{$source_attr} } = $self->$source_attr();
+        }
 
         return $concrete_name->new( %args, @_ );
     };

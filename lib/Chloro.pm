@@ -34,7 +34,7 @@ sub fieldset
     my $caller = shift;
     my $name   = shift;
 
-    my $fieldset = Chloro::FieldSet->new( name => $name );
+    my $fieldset = Chloro::FieldSet::Abstract->new( name => $name );
 
     Moose::Meta::Class
         ->initialize($caller)
@@ -47,7 +47,7 @@ sub group
     my $caller = shift;
     my $name   = shift;
 
-    my $group = Chloro::FieldGroup->new( name => $name );
+    my $group = Chloro::FieldGroup::Abstract->new( name => $name );
 
     Moose::Meta::Class
         ->initialize($caller)
@@ -66,7 +66,7 @@ sub field
     Moose::Meta::Class
         ->initialize($caller)
         ->form()
-        ->add_field( Chloro::Field->new( name => $name, %p ) );
+        ->add_field( Chloro::Field::Abstract->new( name => $name, %p ) );
 
     return;
 }

@@ -3,13 +3,13 @@ package Chloro::Role::Meta::Class;
 use strict;
 use warnings;
 
-use Chloro::Form;
+use Chloro::Form::Abstract;
 use Moose::Role;
 
 has form =>
     ( is      => 'ro',
-      isa     => 'Chloro::Form',
-      default => sub { Chloro::Form->new() },
+      isa     => 'Chloro::Form::Abstract',
+      default => sub { Chloro::Form::Abstract->new() },
     );
 
 

@@ -32,7 +32,7 @@ sub _build_html_name
     my $form = $self->_form()
         or die 'Cannot generate an html name for a field that is not part of a form.';
 
-    return $self->name() if $group->is_implicit();
+    return $self->name() if $group->is_implicit() || ! $group->can_repeat();
 
     return join q{.}, $group->name(), $self->name();
 }

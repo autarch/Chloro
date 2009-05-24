@@ -10,6 +10,7 @@ use Moose;
 use MooseX::AttributeHelpers;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
+use MooseX::Types::Moose qw( Bool );
 
 with 'Chloro::Role::CanBeImplicit';
 
@@ -17,6 +18,13 @@ has name =>
     ( is       => 'ro',
       isa      => NonEmptyStr,
       required => 1,
+    );
+
+has can_repeat =>
+    ( is      => 'ro',
+      isa     => Bool,
+      lazy    => 1,
+      default => sub { $_[0]->is_implicit() ? 0 : 1 } ,
     );
 
 has _form =>

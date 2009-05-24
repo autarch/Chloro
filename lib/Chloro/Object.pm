@@ -8,8 +8,8 @@ use Chloro::Style::Default;
 use Chloro::Types qw( :all );
 use Moose;
 use MooseX::AttributeHelpers;
-use MooseX::Types::Moose qw( Bool ArrayRef HashRef );
 use MooseX::StrictConstructor;
+use MooseX::Types::Moose qw( Bool ArrayRef HashRef );
 
 has 'params' =>
     ( is      => 'ro',
@@ -86,31 +86,41 @@ sub _validate_form
 
     my $params = $self->params();
 
+ FS:
     for my $fs ( $self->form()->fieldsets() )
     {
+    FG:
         for my $fg ( $fs->groups() )
         {
-            for my $field ( $fg->fields() )
-            {
-                if ( $field->is_required() )
-                {
-                    my $name = $field->html_name();
+            my @fields = $fg->fields();
+            my @empty = grep { $self->_field_is_empty($_) } @fields;
 
-                    if ( ! exists $params->{$name} )
-                    {
-                        push @errors,
-                            Chloro::Error->new( field   => $field,
-                                                message => $self->style()->missing_field_error($field),
-                                              );
+            # If an entire repeatable group is empty (ignoring
+            # booleans, which always have a valid value), we just
+            # ignore the group.
+            next FG if $fg->can_repeat() && @empty == grep { ! $_->is_boolean() } @fields;
 
-                        next;
-                    }
-                }
-            }
+            push @errors,
+                map { Chloro::Error->new( field   => $_,
+                                          message => $self->style()->missing_field_error($_),
+                                        ) }
+                    @empty;
         }
     }
 
     return \@errors;
+}
+
+sub _field_is_empty
+{
+    my $self  = shift;
+    my $field = shift;
+
+    return 0 if $field->is_boolean();
+
+    my $val = $self->params()->{ $field->html_name() };
+
+    return ! ( defined $val && length $val );
 }
 
 no Moose;

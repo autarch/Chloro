@@ -34,6 +34,14 @@ has is_required =>
       default  => 0,
     );
 
+has is_boolean =>
+    ( is       => 'ro',
+      isa      => Bool,
+      lazy     => 1,
+      default  => sub { $_[0]->type()->is_a_type_of(Bool) },
+      init_arg => undef,
+    );
+
 has group =>
     ( is       => 'rw',
       isa      => 'Chloro::FieldGroup',

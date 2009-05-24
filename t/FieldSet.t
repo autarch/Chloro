@@ -57,7 +57,7 @@ use Chloro::FieldSet::Abstract;
     $foo_fg->set_fieldset($fs);
 
     throws_ok( sub { $fs->add_group($foo_fg) },
-               qr/\QCannot add a group that already has a fieldset./,
+               qr/\QCannot add a group that already has a fieldset/,
                'cannot add a group that already is in a fieldset' );
 }
 

@@ -4,13 +4,20 @@ use strict;
 use warnings;
 
 use Carp qw( croak );
-use Chloro::FieldSet;
+use Chloro::Style::Default;
 use Chloro::Types qw( :all );
 use Moose;
 use MooseX::Params::Validate qw( pos_validated_list );
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
 use MooseX::Types::Moose qw( Bool );
+
+has style =>
+    ( is      => 'rw',
+      does    => 'Chloro::Role::Style',
+      lazy    => 1,
+      default => sub { Chloro::Style::Default->new() },
+    );
 
 sub add_group
 {

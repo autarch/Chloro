@@ -8,7 +8,8 @@ use MooseX::Types
     -declare => [ qw( ClassDoesImplicit
                       NonEmptyStr
                       NamedObject
-                      ValidFieldType
+                      FieldName
+                      FieldType
                     ) ];
 
 subtype ClassDoesImplicit,
@@ -26,7 +27,12 @@ subtype NamedObject,
     where { $_[0]->can('name') },
     message { 'Must be an object with a name() method' };
 
-subtype ValidFieldType,
+subtype FieldName,
+    as NonEmptyStr,
+    where { /^[^\.]+$/ },
+    message { 'Field names cannot contain periods' };
+
+subtype FieldType,
     as Object,
     where { $_[0]->can('check') },
     message { 'Must be a type constraint object with a check() method' };

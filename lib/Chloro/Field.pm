@@ -7,11 +7,11 @@ use Chloro::Types qw( :all );
 use Moose;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
-use MooseX::Types::Moose qw( Bool Str );
+use MooseX::Types::Moose qw( Bool Defined Str );
 
 has name =>
     ( is       => 'ro',
-      isa      => NonEmptyStr,
+      isa      => FieldName,
       required => 1,
     );
 
@@ -22,9 +22,15 @@ has label =>
       default => sub { $_[0]->name() },
     );
 
+has default =>
+    ( is        => 'ro',
+      isa       => Defined,
+      predicate => 'has_default',
+    );
+
 has type =>
     ( is      => 'ro',
-      isa     => ValidFieldType,
+      isa     => FieldType,
       default => sub { Str },
     );
 

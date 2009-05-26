@@ -95,3 +95,32 @@ use Chloro::Form::Abstract;
                qr/\QCannot add a named group to an implicit fieldset/,
                'cannot add a named group to an implicit fieldset' );
 }
+
+{
+    my $form = Chloro::Form::Abstract->new();
+
+    $form->add_fieldset( Chloro::FieldSet::Abstract->new( name => 'Foo' ) );
+    $form->add_group( Chloro::FieldGroup::Abstract->new( name => 'x' ) );
+    $form->add_group( Chloro::FieldGroup::Abstract->new( name => 'y' ) );
+    $form->add_group( Chloro::FieldGroup::Abstract->new( name => 'z' ) );
+
+    my $fs = Chloro::FieldSet::Abstract->new( name => 'Bar' );
+    $fs->add_group( Chloro::FieldGroup::Abstract->new( name => 'a' ) );
+    $fs->add_group( Chloro::FieldGroup::Abstract->new( name => 'x' ) );
+
+    throws_ok( sub { $form->add_fieldset($fs) },
+               qr/\QThis form already has a group named x/,
+               'cannot have two groups with the same name in a form' );
+}
+
+{
+    my $form = Chloro::Form::Abstract->new();
+
+    $form->add_fieldset( Chloro::FieldSet::Abstract->new( name => 'Foo' ) );
+    $form->add_group( Chloro::FieldGroup::Abstract->new( name => 'x' ) );
+
+    $form->add_fieldset( Chloro::FieldSet::Abstract->new( name => 'Bar' ) );
+    throws_ok( sub { $form->add_group( Chloro::FieldGroup::Abstract->new( name => 'x' ) ) },
+               qr/\QThis form already has a group named x/,
+               'cannot have two groups with the same name in a form' );
+}

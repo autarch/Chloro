@@ -37,7 +37,7 @@ role
     my $add         = 'add_' . $thing;
     my $private_add = q{_} . $add;
     my $get         = 'get_' . $thing;
-    my $has_any     = '_has_' . $plural;
+    my $has_any     = 'has_' . $plural;
     my $current     = 'current_' . $thing;
     my $last_object = '_last_' . $thing;
 

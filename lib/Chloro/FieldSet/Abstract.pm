@@ -22,6 +22,17 @@ has '+form' => ( isa => 'Chloro::Form::Abstract' );
 
 with 'Chloro::Role::Concretizes';
 
+before add_group => sub
+{
+    my $self = shift;
+    my $fg   = shift;
+
+    return unless $self->form();
+
+    confess 'This form already has a group named ' . $fg->name()
+        if $self->form()->has_group_named( $fg->name() );
+};
+
 sub as_concrete
 {
     my $self = shift;

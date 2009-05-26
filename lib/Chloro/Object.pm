@@ -104,6 +104,7 @@ sub _validate_form
                 map { Chloro::Error->new( field   => $_,
                                           message => $self->style()->missing_field_error($_),
                                         ) }
+                grep { $_->is_required() }
                     @empty;
         }
     }

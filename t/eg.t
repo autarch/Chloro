@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 
+use Test::Exception;
 use Test::More 'no_plan';
 
 
@@ -153,4 +154,71 @@ sub login_form_tests
                                     );
 
     ok( $form->is_valid(), 'form is valid' );
+
+    my %fsp = $form->params_for_fieldset('Basic Info');
+    is_deeply( \%fsp,
+               { first_name => 'Joe',
+                 last_name  => 'Schmoe',
+                 occupation => undef,
+               },
+               'params_for_fieldset returns expected value' );
+
+    throws_ok( sub { $form->params_for_fieldset('Websites') },
+               qr/\QCannot call params_for_fieldset on a fieldset (Websites) with named groups/,
+               'cannot call params_for_fieldset on a set with named groups' );
+
+    my %fgp = $form->params_for_group('website');
+    is_deeply( \%fgp,
+               { 1    => { label => undef, uri => undef },
+                 2    => { label => undef, uri => undef },
+                 new1 => { label => undef, uri => undef },
+               },
+               'params_for_group returns expected value' );
+}
+
+{
+    my $form = Test::Form::User->new( params  => { first_name        => 'Joe',
+                                                   last_name         => 'Schmoe',
+                                                   'website.1.label' => 'Blog',
+                                                 },
+                                      repeats => { website => [ 1, 2, 'new1' ] },
+                                    );
+
+    ok( ! $form->is_valid(), 'form is valid' );
+
+    my @e = $form->errors();
+    is_deeply( [ map { { field   => $_->field()->html_name(),
+                         message => $_->message() } }
+                 sort { $a->field()->name() cmp $b->field()->name() }
+                 @e ],
+               [ { field   => 'website.1.uri',
+                       message => 'uri is a required field.',
+                 },
+               ],
+               'got the expected error (cannot have a website label without a uri' );
+}
+
+
+
+{
+    my $form =
+        Test::Form::User->new
+                ( params  => { first_name           => 'Joe',
+                               last_name            => 'Schmoe',
+                               'website.1.label'    => 'Blog',
+                               'website.1.uri'      => 'http://www.example.com/1',
+                               'website.2.uri'      => 'http://www.example.com/2',
+                               'website.new1.label' => 'Crog',
+                               'website.new1.uri'   => 'http://www.example.com/new',
+                             },
+                  repeats => { website => [ 1, 2, 'new1' ] },
+                );
+
+    my %fgp = $form->params_for_group('website');
+    is_deeply( \%fgp,
+               { 1    => { label => 'Blog', uri => 'http://www.example.com/1' },
+                 2    => { label => undef,  uri => 'http://www.example.com/2' },
+                 new1 => { label => 'Crog', uri => 'http://www.example.com/new' },
+               },
+               'params_for_group returns expected value' );
 }

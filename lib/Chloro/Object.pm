@@ -49,8 +49,6 @@ sub BUILD
     my $self = shift;
     my $p    = shift;
 
-    my $repeats = delete $p->{repeats};
-
     $self->_set_form( $self->meta()->form()->as_concrete( repeats => delete $p->{repeats} ) );
 
     return;
@@ -122,6 +120,43 @@ sub _field_is_empty
     my $val = $self->params()->{ $field->html_name() };
 
     return ! ( defined $val && length $val );
+}
+
+sub params_for_fieldset
+{
+    my $self = shift;
+    my $name = shift;
+
+    my $fs = $self->form()->get_fieldset($name)
+        or return;
+
+    my @fg = $fs->groups();
+    if ( @fg > 1 || ! $fg[0]->is_implicit() )
+    {
+        confess "Cannot call params_for_fieldset on a fieldset ($name) with named groups";
+    }
+
+    return map { $_ => $self->params()->{$_} } map { $_->html_name() } $fg[0]->fields();
+}
+
+sub params_for_group
+{
+    my $self = shift;
+    my $name = shift;
+
+    my @fg = grep { $_->base_name() eq $name } map { $_->groups() } $self->form()->fieldsets();
+    return unless @fg;
+
+    my $params = $self->params();
+
+    my %p;
+    for my $fg (@fg)
+    {
+        $p{ $fg->repeat_id() } =
+            { map { $_->name() => $params->{ $_->html_name() } } $fg->fields() };
+    }
+
+    return %p;
 }
 
 no Moose;

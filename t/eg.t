@@ -198,8 +198,6 @@ sub login_form_tests
                'got the expected error (cannot have a website label without a uri' );
 }
 
-
-
 {
     my $form =
         Test::Form::User->new

@@ -119,13 +119,17 @@ sub _validate_form
                 grep { $_->is_required() }
                     @empty;
 
-            push @errors,
-                map { Chloro::Error->new( field   => $_,
-                                          message => $field->error_message($_),
-                                        ) }
-                grep { ! $_->value_is_valid( $self->params->{ $_->html_name() } ) }
-                    @non_empty;
+            for my $field (@non_empty)
+            {
+                my $value = $self->params->{ $field->html_name() };
 
+                next if $field->value_is_valid($value);
+
+                push @errors,
+                    Chloro::Error->new( field   => $field,
+                                        message => $field->error_for_value($value),
+                                      );
+            }
         }
     }
 

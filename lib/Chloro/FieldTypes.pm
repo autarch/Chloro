@@ -16,7 +16,7 @@ subtype NonEmptyStr,
 subtype PosInt,
     as    Int,
     where { $_ > 0 },
-    message { "must be an integer (got $_)" };
+    message { "must be a positive integer (got $_)" };
 
 subtype PosOrZeroInt,
     as    Int,

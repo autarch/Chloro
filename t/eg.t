@@ -192,25 +192,25 @@ sub login_form_tests
                  sort { $a->field()->name() cmp $b->field()->name() }
                  @e ],
                [ { field   => 'website.1.uri',
-                       message => 'uri is a required field.',
+                   message => 'uri is a required field.',
                  },
                ],
-               'got the expected error (cannot have a website label without a uri' );
+               'got the expected error (cannot have a website label without a uri)' );
 }
 
 {
     my $form =
         Test::Form::User->new
-                ( params  => { first_name           => 'Joe',
-                               last_name            => 'Schmoe',
-                               'website.1.label'    => 'Blog',
-                               'website.1.uri'      => 'http://www.example.com/1',
-                               'website.2.uri'      => 'http://www.example.com/2',
-                               'website.new1.label' => 'Crog',
-                               'website.new1.uri'   => 'http://www.example.com/new',
-                             },
-                  repeats => { website => [ 1, 2, 'new1' ] },
-                );
+            ( params  => { first_name           => 'Joe',
+                           last_name            => 'Schmoe',
+                           'website.1.label'    => 'Blog',
+                           'website.1.uri'      => 'http://www.example.com/1',
+                           'website.2.uri'      => 'http://www.example.com/2',
+                           'website.new1.label' => 'Crog',
+                           'website.new1.uri'   => 'http://www.example.com/new',
+                         },
+              repeats => { website => [ 1, 2, 'new1' ] },
+            );
 
     my %fgp = $form->params_for_group('website');
     is_deeply( \%fgp,
@@ -219,4 +219,36 @@ sub login_form_tests
                  new1 => { label => 'Crog', uri => 'http://www.example.com/new' },
                },
                'params_for_group returns expected value' );
+}
+
+{
+    package Test::Form::WithTypes;
+
+    use Chloro;
+    use Chloro::FieldTypes qw( PosInt );
+
+    field 'size' => ( required => 1,
+                      type     => PosInt,
+                    );
+    field 'color' => ( required => 1 );
+}
+
+{
+    my $form =
+        Test::Form::WithTypes->new
+            ( params => { size  => -1,
+                          color => 'blue',
+                        },
+            );
+
+    my @e = $form->errors();
+    is_deeply( [ map { { field   => $_->field()->html_name(),
+                         message => $_->message() } }
+                 sort { $a->field()->name() cmp $b->field()->name() }
+                 @e ],
+               [ { field   => 'size',
+                   message => 'The size field must be a positive integer (got -1)',
+                 },
+               ],
+               q{got the expected error for violating a field's type} );
 }

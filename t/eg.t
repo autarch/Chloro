@@ -119,7 +119,7 @@ sub login_form_tests
     fieldset 'Websites';
     group 'website';
     field 'label';
-    field 'uri'   => ( required => 1 );
+    field 'uri' => ( required => 1 );
 }
 
 {

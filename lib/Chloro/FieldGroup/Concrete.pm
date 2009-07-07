@@ -12,6 +12,12 @@ use MooseX::Types::Moose qw( Str );
 
 extends 'Chloro::FieldGroup';
 
+with 'Chloro::Role::HasCollection' =>
+    { container => 'group',
+      thing     => 'field',
+      class     => 'Chloro::Field::Concrete',
+    };
+
 has name =>
     ( is       => 'ro',
       isa      => NonEmptyStr,

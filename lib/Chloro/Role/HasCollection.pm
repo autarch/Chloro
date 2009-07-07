@@ -21,8 +21,7 @@ parameter thing =>
     );
 
 parameter class =>
-    ( does     => ClassDoesImplicit,
-      required => 1,
+    ( required => 1,
     );
 
 role
@@ -55,12 +54,17 @@ role
           init_arg => undef,
         );
 
+    my $class = $p->class();
+    my $class_can_be_implicit = $class->can('is_implicit');
+
     before $add => sub
     {
         my $self      = shift;
         my $new_thing = shift;
 
-        if ( $self->$has_any() && $self->$current()->is_implicit() )
+        if (    $class_can_be_implicit
+             && $self->$has_any()
+             && $self->$current()->is_implicit() )
         {
             confess "Cannot add a $thing (" . $new_thing->name() . ")"
                   . " to a $container with an implicit $thing.\n"
@@ -91,13 +95,11 @@ role
         $new_thing->$set_parent($self);
     };
 
-    my $class = $p->class();
-
     method $current => sub
     {
         my $self = shift;
 
-        unless ( $self->$has_any() )
+        if ( $class_can_be_implicit && ! $self->$has_any() )
         {
             my $implicit = $class->new( name        => '__IMPLICIT__',
                                         is_implicit => 1,

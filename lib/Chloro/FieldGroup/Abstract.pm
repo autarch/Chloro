@@ -13,6 +13,12 @@ use MooseX::StrictConstructor;
 
 extends 'Chloro::FieldGroup';
 
+with 'Chloro::Role::HasCollection' =>
+    { container => 'group',
+      thing     => 'field',
+      class     => 'Chloro::Field::Abstract',
+    };
+
 has name =>
     ( is       => 'ro',
       isa      => NonEmptyStr,

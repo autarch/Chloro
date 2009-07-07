@@ -37,4 +37,8 @@ subtype FieldType,
     where { $_[0]->can('check') },
     message { 'Must be a type constraint object with a check() method' };
 
+coerce FieldType,
+    from Str,
+    via  { Moose::Utils::TypeConstraint::parse_or_find_type_constraint($_) };
+
 1;

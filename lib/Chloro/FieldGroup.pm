@@ -36,32 +36,12 @@ has _form =>
       init_arg => undef,
     );
 
-has _fields =>
-    ( is       => 'ro',
-      isa      => 'Chloro::UniqueNamedObjectArray',
-      default  => sub { Chloro::UniqueNamedObjectArray->new() },
-      handles  => { fields    => 'objects',
-                    add_field => 'add_object',
-                    get_field => 'get_object',
-                    has_field => 'has_object',
-                  },
-      init_arg => undef,
-    );
-
 has fieldset =>
     ( is       => 'rw',
       isa      => 'Chloro::FieldSet',
       weak_ref => 1,
       init_arg => undef,
     );
-
-after add_field => sub
-{
-    my $self  = shift;
-    my $field = shift;
-
-    $field->set_group($self);
-};
 
 sub _build_form
 {

@@ -91,7 +91,21 @@ sub _validate_form
         for my $fg ( $fs->groups() )
         {
             my @fields = $fg->fields();
-            my @empty = grep { $self->_field_is_empty($_) } @fields;
+
+            my @empty;
+            my @non_empty;
+
+            for my $field (@fields)
+            {
+                if ( $self->_field_is_empty($field) )
+                {
+                    push @empty, $field;
+                }
+                else
+                {
+                    push @non_empty, $field;
+                }
+            }
 
             # If an entire repeatable group is empty (ignoring
             # booleans, which always have a valid value), we just
@@ -104,6 +118,14 @@ sub _validate_form
                                         ) }
                 grep { $_->is_required() }
                     @empty;
+
+            push @errors,
+                map { Chloro::Error->new( field   => $_,
+                                          message => $field->error_message($_),
+                                        ) }
+                grep { ! $_->value_is_valid( $self->params->{ $_->html_name() } ) }
+                    @non_empty;
+
         }
     }
 

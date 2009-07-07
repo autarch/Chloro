@@ -77,6 +77,43 @@ sub _build_form
     return $fs->form();
 }
 
+sub value_is_valid
+{
+    my $self  = shift;
+    my $value = shift;
+
+    return $self->type()->check($value);
+}
+
+sub error_for_value
+{
+    my $self  = shift;
+    my $value = shift;
+
+    if ( $self->type()->has_message )
+    {
+        return
+              'The '
+            . $self->name()
+            . ' field '
+            . $self->type()->get_message($value);
+    }
+    else
+    {
+        my $field_desc
+            = $self->type()->name() eq '__ANON__'
+            ? 'valid'
+            : 'a valid ' . $self->type()->name();
+
+        return
+              'The '
+            . $self->name()
+            . ' field was not '
+            . $field_desc
+            . " (got $value)";
+    }
+}
+
 no Moose;
 
 __PACKAGE__->meta()->make_immutable();

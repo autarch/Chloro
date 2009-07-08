@@ -18,12 +18,6 @@ has html_name =>
       init_arg => undef,
     );
 
-has html_widget =>
-    ( is       => 'ro',
-      isa      => 'Chloro::Field::HTMLWidget',
-      default  => 'text',
-    );
-
 has '+group' => ( isa => 'Chloro::FieldGroup::Concrete' );
 
 has '+_form' => ( isa => 'Chloro::Form::Concrete' );

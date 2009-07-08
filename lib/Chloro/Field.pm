@@ -48,6 +48,12 @@ has is_boolean =>
       init_arg => undef,
     );
 
+has render_as =>
+    ( is       => 'ro',
+      isa      => NonEmptyStr,
+      default  => 'text',
+    );
+
 has group =>
     ( is       => 'rw',
       isa      => 'Chloro::FieldGroup',

@@ -18,6 +18,12 @@ has html_name =>
       init_arg => undef,
     );
 
+has html_widget =>
+    ( is       => 'ro',
+      isa      => 'Chloro::Field::HTMLWidget',
+      default  => 'text',
+    );
+
 has '+group' => ( isa => 'Chloro::FieldGroup::Concrete' );
 
 has '+_form' => ( isa => 'Chloro::Form::Concrete' );
@@ -28,9 +34,6 @@ sub _build_html_name
 
     my $group = $self->group()
         or die 'Cannot generate an html name for a field that does not belong to a group.';
-
-    my $form = $self->_form()
-        or die 'Cannot generate an html name for a field that is not part of a form.';
 
     return $self->name() if $group->is_implicit() || ! $group->can_repeat();
 

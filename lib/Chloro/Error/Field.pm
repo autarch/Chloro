@@ -1,11 +1,12 @@
-package Chloro::Error;
+package Chloro::Error::Field;
 
 use strict;
 use warnings;
 
-use Chloro::Types qw( :all );
 use Moose;
 use MooseX::StrictConstructor;
+
+with 'Chloro::Role::Error';
 
 has field =>
     ( is       => 'ro',
@@ -13,12 +14,8 @@ has field =>
       required => 1,
     );
 
-has message =>
-    ( is       => 'ro',
-      isa      => NonEmptyStr,
-      required => 1,
-    );
-
 no Moose;
 
 __PACKAGE__->meta()->make_immutable();
+
+1;

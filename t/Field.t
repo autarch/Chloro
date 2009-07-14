@@ -42,5 +42,6 @@ use Moose::Util::TypeConstraints;
     is( $field->error_for_value(11),
         'The foo field was not valid (got 11)',
         'error message for subtype without a message' );
-}
 
+    isa_ok( $field->type(), 'Chloro::FieldType' );
+}

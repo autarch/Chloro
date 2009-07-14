@@ -10,6 +10,13 @@ use MooseX::Types
                       NamedObject
                       FieldName
                       FieldType
+                      NamedType
+                      HTTPMethod
+                      NonEmptyStr
+                      PosInt
+                      PosOrZeroInt
+                      PosNum
+                      PosOrZeroNum
                     ) ];
 
 subtype ClassDoesImplicit,
@@ -33,12 +40,48 @@ subtype FieldName,
     message { 'Field names cannot contain periods' };
 
 subtype FieldType,
-    as Object,
-    where { $_[0]->can('check') },
-    message { 'Must be a type constraint object with a check() method' };
+    as class_type('Chloro::FieldType');
 
 coerce FieldType,
     from Str,
-    via  { Moose::Utils::TypeConstraint::parse_or_find_type_constraint($_) };
+    via { Moose::Utils::TypeConstraint::parse_or_find_type_constraint($_) };
+
+coerce FieldType,
+    from class_type('Moose::Meta::TypeConstraint'),
+    via { Chloro::FieldType->new( type => $_ ) };
+
+subtype NamedType,
+    as class_type('Moose::Meta::TypeConstraint'),
+    where { $_->name() ne '__ANON__' },
+    message { 'You must provide a named type' };
+
+enum HTTPMethod, qw( GET POST PUT DELETE );
+
+# For field types
+
+subtype NonEmptyStr,
+    as    Str,
+    where { defined && length },
+    message { 'must not be empty' };
+
+subtype PosInt,
+    as    Int,
+    where { $_ > 0 },
+    message { "must be a positive integer (got $_)" };
+
+subtype PosOrZeroInt,
+    as    Int,
+    where { $_ >= 0 },
+    message { "must be an integer greater than or equal to zero (got $_)" };
+
+subtype PosNum,
+    as    Num,
+    where { $_ > 0 },
+    message { "must be an number (got $_)" };
+
+subtype PosOrZeroNum,
+    as    Num,
+    where { $_ >= 0 },
+    message { "must be an number greater than or equal to zero (got $_)" };
 
 1;

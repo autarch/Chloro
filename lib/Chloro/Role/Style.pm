@@ -5,7 +5,7 @@ use warnings;
 
 use Moose::Role;
 
-requires qw( missing_field_error );
+requires qw( label_from_name missing_field_error );
 
 no Moose::Role;
 

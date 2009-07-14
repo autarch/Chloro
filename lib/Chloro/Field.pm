@@ -3,11 +3,12 @@ package Chloro::Field;
 use strict;
 use warnings;
 
+use Chloro::FieldTypes ();
 use Chloro::Types qw( :all );
 use Moose;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::StrictConstructor;
-use MooseX::Types::Moose qw( Bool Defined Str );
+use MooseX::Types::Moose qw( Defined Bool );
 
 has name =>
     ( is       => 'ro',
@@ -19,7 +20,7 @@ has label =>
     ( is      => 'ro',
       isa     => NonEmptyStr,
       lazy    => 1,
-      default => sub { $_[0]->name() },
+      builder => '_build_label',
     );
 
 has default =>
@@ -31,7 +32,8 @@ has default =>
 has type =>
     ( is      => 'ro',
       isa     => FieldType,
-      default => sub { Str },
+      default => sub { Chloro::FieldTypes::NonEmptyStr },
+      coerce  => 1,
     );
 
 has is_required =>
@@ -81,6 +83,13 @@ sub _build_form
         or return;
 
     return $fs->form();
+}
+
+sub _build_label
+{
+    my $self = shift;
+
+    return $self->_form()->style()->label_from_name( $self->name() );
 }
 
 sub value_is_valid

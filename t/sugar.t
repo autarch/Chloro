@@ -19,7 +19,7 @@ use Test::More 'no_plan';
     isa_ok( Simple->meta()->form(), 'Chloro::Form',
             'Simple->meta()->form' );
 
-    my $simple = Simple->new();
+    my $simple = Simple->new( action => '/' );
     isa_ok( $simple, 'Chloro::Object',
             'Simple object' );
 

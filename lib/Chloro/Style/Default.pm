@@ -9,6 +9,16 @@ use MooseX::Types::Moose qw( Str );
 
 with 'Chloro::Role::Style';
 
+sub label_from_name
+{
+    my $self = shift;
+    my $name = shift;
+
+    ( my $label = $name ) =~ s/_/ /g;
+
+    return ucfirst $label;
+}
+
 sub missing_field_error
 {
     my $self  = shift;

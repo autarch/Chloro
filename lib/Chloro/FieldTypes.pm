@@ -3,34 +3,23 @@ package Chloro::FieldTypes;
 use strict;
 use warnings;
 
-use MooseX::Types
-    -declare => [ qw( NonEmptyStr PosInt PosOrZeroInt PosNum PosOrZeroNum ) ];
+use base 'Exporter';
 
-use MooseX::Types::Moose qw( Str Int Num );
+our @EXPORT_OK = qw( NonEmptyStr PosInt PosOrZeroInt PosNum PosOrZeroNum Bool );
+our %EXPORT_TAGS = ( 'all' => \@EXPORT_OK );
 
-subtype NonEmptyStr,
-    as    Str,
-    where { defined && length },
-    message { 'must not be empty' };
+use Chloro::FieldType;
+use Chloro::Types
+    ( map { $_ => { -as => 'CT_' . $_ } }
+      qw( NonEmptyStr PosInt PosOrZeroInt PosNum PosOrZeroNum ) );
+use MooseX::Types::Moose ( Bool => { -as => 'MooseBool' } );
 
-subtype PosInt,
-    as    Int,
-    where { $_ > 0 },
-    message { "must be a positive integer (got $_)" };
-
-subtype PosOrZeroInt,
-    as    Int,
-    where { $_ >= 0 },
-    message { "must be an integer greater than or equal to zero (got $_)" };
-
-subtype PosNum,
-    as    Num,
-    where { $_ > 0 },
-    message { "must be an number (got $_)" };
-
-subtype PosOrZeroNum,
-    as    Num,
-    where { $_ >= 0 },
-    message { "must be an number greater than or equal to zero (got $_)" };
+use constant { NonEmptyStr  => Chloro::FieldType->new( type => CT_NonEmptyStr ),
+               PosInt       => Chloro::FieldType->new( type => CT_PosInt ),
+               PosOrZeroInt => Chloro::FieldType->new( type => CT_PosOrZeroInt ),
+               PosNum       => Chloro::FieldType->new( type => CT_PosNum ),
+               PosOrZeroNum => Chloro::FieldType->new( type => CT_PosOrZeroNum ),
+               Bool         => Chloro::FieldType->new( type => MooseBool ),
+             };
 
 1;

@@ -3,26 +3,45 @@ package Chloro::Object;
 use strict;
 use warnings;
 
-use Chloro::Error;
+use Chloro::Error::Field;
+use Chloro::Error::Form;
 use Chloro::Style::Default;
 use Chloro::Types qw( :all );
 use Moose;
+use Moose::Util::TypeConstraints qw( role_type );
 use MooseX::AttributeHelpers;
 use MooseX::StrictConstructor;
 use MooseX::Types::Moose qw( Bool ArrayRef HashRef );
 
-has 'params' =>
-    ( is      => 'ro',
-      isa     => HashRef,
-      default => sub { {} },
+has _params =>
+    ( metaclass => 'Collection::Hash',
+      is        => 'ro',
+      isa       => HashRef,
+      default   => sub { {} },
+      init_arg  => 'params',
+      provides  => { kv  => 'params',
+                     get => 'param',
+                   },
     );
 
-has 'form' =>
+has form =>
     ( is       => 'rw',
       writer   => '_set_form',
       isa      => 'Chloro::Form::Concrete',
-      handles  => [ qw( style ) ],
+      handles  => [ qw( fieldsets fields style ) ],
       init_arg => undef,
+    );
+
+has action =>
+    ( is       => 'rw',
+      isa      => NonEmptyStr,
+      required => 1,
+    );
+
+has method =>
+    ( is      => 'rw',
+      isa     => HTTPMethod,
+      default => 'POST',
     );
 
 has validate_empty_fields =>
@@ -34,12 +53,12 @@ has validate_empty_fields =>
 has _errors =>
     ( metaclass => 'Collection::Array',
       is        => 'ro',
-      isa       => ArrayRef['Chloro::Error'],
+      isa       => ArrayRef[ role_type('Chloro::Role::Error') ],
       lazy      => 1,
-      builder   => '_validate_form',
+      builder   => '_build_errors',
       init_arg  => undef,
       provides  => { elements => 'errors',
-                     push     => 'add_error',
+                     push     => '_add_error',
                      empty    => 'has_errors',
                    },
     );
@@ -73,16 +92,16 @@ sub is_valid
 {
     my $self = shift;
 
-    return ! $self->has_errors();
+    return ! $self->errors();
 }
 
-sub _validate_form
+sub _build_errors
 {
     my $self = shift;
 
     my @errors;
 
-    my $params = $self->params();
+    my $params = $self->_params();
 
  FS:
     for my $fs ( $self->form()->fieldsets() )
@@ -113,7 +132,7 @@ sub _validate_form
             next FG if $fg->can_repeat() && @empty == grep { ! $_->is_boolean() } @fields;
 
             push @errors,
-                map { Chloro::Error->new( field   => $_,
+                map { $self->_make_error( field   => $_,
                                           message => $self->style()->missing_field_error($_),
                                         ) }
                 grep { $_->is_required() }
@@ -121,12 +140,12 @@ sub _validate_form
 
             for my $field (@non_empty)
             {
-                my $value = $self->params->{ $field->html_name() };
+                my $value = $self->_params->{ $field->html_name() };
 
                 next if $field->value_is_valid($value);
 
                 push @errors,
-                    Chloro::Error->new( field   => $field,
+                    $self->_make_error( field   => $field,
                                         message => $field->error_for_value($value),
                                       );
             }
@@ -136,6 +155,35 @@ sub _validate_form
     return \@errors;
 }
 
+sub add_error
+{
+    my $self = shift;
+
+    if ( blessed $_[0] )
+    {
+        $self->_add_error( $_[0] );
+    }
+    else
+    {
+        $self->_add_error( $self->_make_error(@_) );
+    }
+}
+
+sub _make_error
+{
+    my $self = shift;
+    my %p    = @_;
+
+    if ( $p{field} )
+    {
+        return Chloro::Error::Field->new(%p);
+    }
+    else
+    {
+        return Chloro::Error::Form->new(%p);
+    }
+}
+
 sub _field_is_empty
 {
     my $self  = shift;
@@ -143,9 +191,16 @@ sub _field_is_empty
 
     return 0 if $field->is_boolean();
 
-    my $val = $self->params()->{ $field->html_name() };
+    my $val = $self->_params()->{ $field->html_name() };
 
     return ! ( defined $val && length $val );
+}
+
+sub all_params
+{
+    my $self = shift;
+
+    return %{ $self->_params() };
 }
 
 sub params_for_fieldset
@@ -162,7 +217,7 @@ sub params_for_fieldset
         confess "Cannot call params_for_fieldset on a fieldset ($name) with named groups";
     }
 
-    return map { $_ => $self->params()->{$_} } map { $_->html_name() } $fg[0]->fields();
+    return map { $_ => $self->_params()->{$_} } map { $_->html_name() } $fg[0]->fields();
 }
 
 sub params_for_group
@@ -173,7 +228,7 @@ sub params_for_group
     my @fg = grep { $_->base_name() eq $name } map { $_->groups() } $self->form()->fieldsets();
     return unless @fg;
 
-    my $params = $self->params();
+    my $params = $self->_params();
 
     my %p;
     for my $fg (@fg)

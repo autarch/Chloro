@@ -48,7 +48,7 @@ sub login_form_tests
     my $prefix = shift || q{};
 
     {
-        my $form = $class->new( params => {} );
+        my $form = $class->new( action => '/', params => {} );
 
         ok( ! $form->is_valid(),
             "form is not valid with empty parameters [$class]" );
@@ -71,7 +71,7 @@ sub login_form_tests
     }
 
     {
-        my $form = $class->new( params => { $prefix . 'username' => 'foo' } );
+        my $form = $class->new( action => '/', params => { $prefix . 'username' => 'foo' } );
 
         ok( ! $form->is_valid(),
             "form is not valid without a password [$class]" );
@@ -93,7 +93,8 @@ sub login_form_tests
     {
         my $form =
             $class->new
-                ( params =>
+                ( action => '/',
+                  params =>
                   { $prefix . username => 'foo',
                     $prefix . password => 'bar',
                   }
@@ -123,7 +124,8 @@ sub login_form_tests
 }
 
 {
-    my $form = Test::Form::User->new( params  => {},
+    my $form = Test::Form::User->new( action  => '/',
+                                      params  => {},
                                       repeats => { website => [ 1, 2, 'new1' ] },
                                     );
 
@@ -147,7 +149,8 @@ sub login_form_tests
 }
 
 {
-    my $form = Test::Form::User->new( params  => { first_name => 'Joe',
+    my $form = Test::Form::User->new( action  => '/',
+                                      params  => { first_name => 'Joe',
                                                    last_name  => 'Schmoe',
                                                  },
                                       repeats => { website => [ 1, 2, 'new1' ] },
@@ -177,7 +180,8 @@ sub login_form_tests
 }
 
 {
-    my $form = Test::Form::User->new( params  => { first_name        => 'Joe',
+    my $form = Test::Form::User->new( action  => '/',
+                                      params  => { first_name        => 'Joe',
                                                    last_name         => 'Schmoe',
                                                    'website.1.label' => 'Blog',
                                                  },
@@ -201,7 +205,8 @@ sub login_form_tests
 {
     my $form =
         Test::Form::User->new
-            ( params  => { first_name           => 'Joe',
+            ( action  => '/',
+              params  => { first_name           => 'Joe',
                            last_name            => 'Schmoe',
                            'website.1.label'    => 'Blog',
                            'website.1.uri'      => 'http://www.example.com/1',
@@ -222,6 +227,27 @@ sub login_form_tests
 }
 
 {
+    my $form = Test::Form::User->new( action => '/',
+                                      params => { first_name => 'Joe',
+                                                  last_name  => 'Schmoe',
+                                                },
+                                    );
+
+    $form->add_error( Chloro::Error::Form->new( message => 'foo' ) );
+
+    $form->add_error( message => 'bar' );
+
+    my $field = ( ( $form->fieldsets() )[0]->fields() )[0];
+    $form->add_error( field => $field, message => 'bar' );
+
+    my @errors = $form->errors();
+    is( scalar @errors, 3, 'form has three errors' );
+    isa_ok( $errors[0], 'Chloro::Error::Form', 'first error' );
+    isa_ok( $errors[1], 'Chloro::Error::Form', 'second error' );
+    isa_ok( $errors[2], 'Chloro::Error::Field', 'third error' );
+}
+
+{
     package Test::Form::WithTypes;
 
     use Chloro;
@@ -236,7 +262,8 @@ sub login_form_tests
 {
     my $form =
         Test::Form::WithTypes->new
-            ( params => { size  => -1,
+            ( action => '/',
+              params => { size  => -1,
                           color => 'blue',
                         },
             );

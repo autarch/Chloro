@@ -249,10 +249,10 @@ sub login_form_tests
     my @form_errors = $form->form_errors();
     is( scalar @form_errors, 2, 'form has two form errors' );
 
-    my @field_errors = $form->errors_for_field( $field->html_name() );
+    my @field_errors = $form->errors_for_field($field);
     is( scalar @field_errors, 1, 'got one error for the field which should have an error' );
 
-    @field_errors = $form->errors_for_field( $field->html_name() . ' does not exist' );
+    @field_errors = $form->errors_for_field( ( ( $form->fieldsets() )[0]->fields() )[1] );
     is( scalar @field_errors, 0, 'got no errors for a field which should not have an error' );
 }
 

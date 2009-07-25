@@ -224,10 +224,10 @@ sub _build_field_errors
 
 sub errors_for_field
 {
-    my $self = shift;
-    my $name = shift;
+    my $self  = shift;
+    my $field = shift;
 
-    return @{ $self->_field_errors()->{$name} || [] };
+    return @{ $self->_field_errors()->{ $field->html_name() } || [] };
 }
 
 sub _field_is_empty

@@ -8,7 +8,7 @@ use Chloro::Error::Form;
 use Chloro::Style::Default;
 use Chloro::Types qw( :all );
 use Moose;
-use Moose::Util::TypeConstraints qw( role_type );
+use Moose::Util::TypeConstraints qw( class_type role_type );
 use MooseX::AttributeHelpers;
 use MooseX::StrictConstructor;
 use MooseX::Types::Moose qw( Bool ArrayRef HashRef );
@@ -19,8 +19,7 @@ has _params =>
       isa       => HashRef,
       default   => sub { {} },
       init_arg  => 'params',
-      provides  => { kv  => 'params',
-                     get => 'param',
+      provides  => { get => 'param',
                    },
     );
 
@@ -57,10 +56,28 @@ has _errors =>
       lazy      => 1,
       builder   => '_build_errors',
       init_arg  => undef,
-      provides  => { elements => 'errors',
-                     push     => '_add_error',
+      provides  => { push     => '_add_error',
                      empty    => 'has_errors',
                    },
+    );
+
+has _form_errors =>
+    ( metaclass => 'Collection::Array',
+      is        => 'ro',
+      isa       => ArrayRef[ class_type('Chloro::Error::Form') ],
+      lazy      => 1,
+      builder   => '_build_form_errors',
+      init_arg  => undef,
+      provides  => { elements => 'form_errors',
+                   },
+    );
+
+has _field_errors =>
+    ( is        => 'ro',
+      isa       => HashRef[ ArrayRef[ class_type('Chloro::Error::Field') ] ],
+      lazy      => 1,
+      builder   => '_build_field_errors',
+      init_arg  => undef,
     );
 
 sub BUILD
@@ -92,7 +109,7 @@ sub is_valid
 {
     my $self = shift;
 
-    return ! $self->errors();
+    return ! $self->has_errors();
 }
 
 sub _build_errors
@@ -182,6 +199,35 @@ sub _make_error
     {
         return Chloro::Error::Form->new(%p);
     }
+}
+
+sub _build_form_errors
+{
+    my $self = shift;
+
+    return [ grep { $_->isa('Chloro::Error::Form') } @{ $self->_errors() } ];
+}
+
+sub _build_field_errors
+{
+    my $self = shift;
+
+    my $fe = {};
+
+    for my $e ( grep { $_->isa('Chloro::Error::Field') } @{ $self->_errors() } )
+    {
+        push @{ $fe->{ $e->field()->html_name() } }, $e;
+    }
+
+    return $fe;
+}
+
+sub errors_for_field
+{
+    my $self = shift;
+    my $name = shift;
+
+    return @{ $self->_field_errors()->{$name} || [] };
 }
 
 sub _field_is_empty

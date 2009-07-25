@@ -24,7 +24,7 @@ sub missing_field_error
     my $self  = shift;
     my $field = shift;
 
-    return $field->name() . ' is a required field.';
+    return $field->label() . ' is a required field.';
 }
 
 no Moose;

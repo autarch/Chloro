@@ -53,7 +53,7 @@ sub login_form_tests
         ok( ! $form->is_valid(),
             "form is not valid with empty parameters [$class]" );
 
-        my @e = $form->errors();
+        my @e = @{ $form->_errors() };
         is( scalar @e, 2, '2 errors' );
 
         is_deeply( [ map { { field   => $_->field()->html_name(),
@@ -61,10 +61,10 @@ sub login_form_tests
                      sort { $a->field()->name() cmp $b->field()->name() }
                      @e ],
                    [ { field   => $prefix . 'password',
-                       message => 'password is a required field.',
+                       message => 'Password is a required field.',
                      },
                      { field   => $prefix . 'username',
-                       message => 'username is a required field.',
+                       message => 'Username is a required field.',
                      }
                    ],
                    "got the expected errors [$class]" );
@@ -76,7 +76,7 @@ sub login_form_tests
         ok( ! $form->is_valid(),
             "form is not valid without a password [$class]" );
 
-        my @e = $form->errors();
+        my @e = @{ $form->_errors() };
         is( scalar @e, 1, '1 error' );
 
         is_deeply( [ map { { field   => $_->field()->html_name(),
@@ -84,7 +84,7 @@ sub login_form_tests
                      sort { $a->field()->name() cmp $b->field()->name() }
                      @e ],
                    [ { field   => $prefix . 'password',
-                       message => 'password is a required field.',
+                       message => 'Password is a required field.',
                      }
                    ],
                    "got the expected error [$class]" );
@@ -102,7 +102,7 @@ sub login_form_tests
 
         ok( $form->is_valid(), 'form is valid' );
 
-        my @e = $form->errors();
+        my @e = @{ $form->_errors() };
         is( scalar @e, 0, "0 errors [$class]" );
     }
 }
@@ -131,7 +131,7 @@ sub login_form_tests
 
     ok( ! $form->is_valid(), 'form is not valid with no parameters' );
 
-    my @e = $form->errors();
+    my @e = @{ $form->_errors() };
     is( scalar @e, 2, '2 errors' );
 
     is_deeply( [ map { { field   => $_->field()->html_name(),
@@ -139,10 +139,10 @@ sub login_form_tests
                  sort { $a->field()->name() cmp $b->field()->name() }
                  @e ],
                [ { field   => 'first_name',
-                   message => 'first_name is a required field.',
+                   message => 'First name is a required field.',
                  },
                  { field   => 'last_name',
-                   message => 'last_name is a required field.',
+                   message => 'Last name is a required field.',
                  }
                ],
                'got the expected errors' );
@@ -190,13 +190,13 @@ sub login_form_tests
 
     ok( ! $form->is_valid(), 'form is valid' );
 
-    my @e = $form->errors();
+    my @e = @{ $form->_errors() };
     is_deeply( [ map { { field   => $_->field()->html_name(),
                          message => $_->message() } }
                  sort { $a->field()->name() cmp $b->field()->name() }
                  @e ],
                [ { field   => 'website.1.uri',
-                   message => 'uri is a required field.',
+                   message => 'Uri is a required field.',
                  },
                ],
                'got the expected error (cannot have a website label without a uri)' );
@@ -240,11 +240,20 @@ sub login_form_tests
     my $field = ( ( $form->fieldsets() )[0]->fields() )[0];
     $form->add_error( field => $field, message => 'bar' );
 
-    my @errors = $form->errors();
+    my @errors = @{ $form->_errors() };
     is( scalar @errors, 3, 'form has three errors' );
     isa_ok( $errors[0], 'Chloro::Error::Form', 'first error' );
     isa_ok( $errors[1], 'Chloro::Error::Form', 'second error' );
     isa_ok( $errors[2], 'Chloro::Error::Field', 'third error' );
+
+    my @form_errors = $form->form_errors();
+    is( scalar @form_errors, 2, 'form has two form errors' );
+
+    my @field_errors = $form->errors_for_field( $field->html_name() );
+    is( scalar @field_errors, 1, 'got one error for the field which should have an error' );
+
+    @field_errors = $form->errors_for_field( $field->html_name() . ' does not exist' );
+    is( scalar @field_errors, 0, 'got no errors for a field which should not have an error' );
 }
 
 {
@@ -268,7 +277,7 @@ sub login_form_tests
                         },
             );
 
-    my @e = $form->errors();
+    my @e = @{ $form->_errors() };
     is_deeply( [ map { { field   => $_->field()->html_name(),
                          message => $_->message() } }
                  sort { $a->field()->name() cmp $b->field()->name() }

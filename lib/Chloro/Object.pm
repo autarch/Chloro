@@ -43,10 +43,10 @@ has method =>
       default => 'POST',
     );
 
-has validate_empty_fields =>
+has forget_passwords_on_serialize =>
     ( is      => 'ro',
       isa     => Bool,
-      default => 0,
+      default => 1,
     );
 
 has _errors =>
@@ -69,6 +69,7 @@ has _form_errors =>
       builder   => '_build_form_errors',
       init_arg  => undef,
       provides  => { elements => 'form_errors',
+                     empty    => 'has_form_errors',
                    },
     );
 
@@ -121,7 +122,7 @@ sub _build_errors
     my $params = $self->_params();
 
  FS:
-    for my $fs ( $self->form()->fieldsets() )
+    for my $fs ( $self->fieldsets() )
     {
     FG:
         for my $fg ( $fs->groups() )
@@ -271,7 +272,7 @@ sub params_for_group
     my $self = shift;
     my $name = shift;
 
-    my @fg = grep { $_->base_name() eq $name } map { $_->groups() } $self->form()->fieldsets();
+    my @fg = grep { $_->base_name() eq $name } map { $_->groups() } $self->fieldsets();
     return unless @fg;
 
     my $params = $self->_params();
@@ -284,6 +285,41 @@ sub params_for_group
     }
 
     return %p;
+}
+
+sub STORABLE_freeze
+{
+    my $self    = shift;
+    my $cloning = shift;
+
+    return if $cloning;
+
+    for my $field ( grep { $_->render_as() eq 'password' }
+                    map { $_->fields() }
+                    map { $_->groups() }
+                    $self->fieldsets() )
+    {
+        delete $self->_params()->{ $field->html_name() };
+    }
+
+    # We need to save ourself as an unblessed hash or Storable seems
+    # to get cranky.
+    return q{}, { %{ $self } };
+}
+
+sub STORABLE_thaw
+{
+    my $self    = shift;
+    my $cloning = shift;
+
+    return if $cloning;
+
+    shift;
+    my $obj  = shift;
+
+    %{ $self } = %{ $obj };
+
+    return;
 }
 
 no Moose;

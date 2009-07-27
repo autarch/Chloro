@@ -23,6 +23,12 @@ has label =>
       builder => '_build_label',
     );
 
+has help_text =>
+    ( is        => 'ro',
+      isa       => NonEmptyStr,
+      predicate => 'has_help_text',
+    );
+
 has default =>
     ( is        => 'ro',
       isa       => Defined,
@@ -54,6 +60,12 @@ has render_as =>
     ( is       => 'ro',
       isa      => NonEmptyStr,
       default  => 'text',
+    );
+
+has html_class =>
+    ( is        => 'ro',
+      isa       => NonEmptyStr,
+      predicate => '_has_html_class',
     );
 
 has group =>

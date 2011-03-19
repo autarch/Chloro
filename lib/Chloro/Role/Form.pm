@@ -1,7 +1,6 @@
-package Chloro::Form;
+package Chloro::Role::Form;
 
-use Moose;
-use MooseX::StrictConstructor;
+use Moose::Role;
 
 use namespace::autoclean;
 
@@ -23,7 +22,5 @@ sub process {
     );
 
 }
-
-__PACKAGE__->meta()->make_immutable();
 
 1;

@@ -5,7 +5,7 @@ use MooseX::StrictConstructor;
 
 use namespace::autoclean;
 
-use Chloro::Types qw( Bool CodeRef Str );
+use Chloro::Types qw( Bool CodeRef Item Str );
 
 with 'Chloro::Role::FormComponent';
 
@@ -14,6 +14,12 @@ has type => (
     isa      => 'Moose::Meta::TypeConstraint',
     required => 1,
     init_arg => 'isa',
+);
+
+has default => (
+    is        => 'ro',
+    isa       => Item,
+    predicate => 'has_default',
 );
 
 has is_required => (

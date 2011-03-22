@@ -63,6 +63,7 @@ sub _validate_field {
     my $params = shift;
 
     my $value = $field->extractor()->( $field, $params, $self );
+    $value = $field->default() if !defined $value && $field->has_default();
 
     my @errors;
     if ( $field->is_required() && _value_is_empty($value) ) {

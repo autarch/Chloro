@@ -17,6 +17,7 @@ my $form = Chloro::Test::Login->new();
             type     => $_->type(),
             required => $_->is_required(),
             secure   => $_->is_secure(),
+            ( $_->has_default() ? ( default => $_->default() ) : () ),
             }
     } $form->fields();
 
@@ -36,6 +37,7 @@ my $form = Chloro::Test::Login->new();
                 type     => Bool,
                 required => 0,
                 secure   => 0,
+                default  => 0,
             },
         },
         'field metadata'
@@ -66,6 +68,7 @@ my $form = Chloro::Test::Login->new();
         {
             username => 'foo',
             password => 'bar',
+            remember => 0,
         },
         'results_hash returns expected values'
     );

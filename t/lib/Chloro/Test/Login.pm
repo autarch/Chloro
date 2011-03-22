@@ -15,7 +15,8 @@ field password => (
 );
 
 field remember => (
-    isa => Bool,
+    isa     => Bool,
+    default => 0,
 );
 
 __PACKAGE__->meta()->make_immutable;

@@ -4,10 +4,12 @@ use strict;
 use warnings;
 
 use Chloro::Field;
+use Chloro::Group;
 use Chloro::Role::Form;
 use Chloro::Trait::Class;
 use Moose::Exporter;
 use Moose::Util::MetaRole;
+use Scalar::Util qw( blessed );
 
 Moose::Exporter->setup_import_methods(
     with_meta => ['field'],
@@ -40,9 +42,30 @@ sub field {
         @_,
     );
 
-    $meta->add_field($field);
+    # Called inside a call to group()
+    if (wantarray) {
+        return $field;
+    }
+    else {
+        $meta->add_field($field);
+    }
 
     return;
+}
+
+sub group {
+    my $meta = shift;
+
+    my @fields;
+    push @fields, pop @_ while blessed $_[-1];
+
+    my $group = Chloro::Group->new(
+        name => shift,
+        fields => \@fields,
+        @_,
+    );
+
+    $meta->add_group($group);
 }
 
 1;

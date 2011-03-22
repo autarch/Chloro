@@ -18,6 +18,17 @@ has _fields => (
     },
 );
 
+has _groups => (
+    isa      => 'Tie::IxHash',
+    init_arg => undef,
+    default  => sub { Tie::IxHash->new() },
+    handles  => {
+        _add_group => 'STORE',
+        _has_group => 'EXISTS',
+        groups     => 'Values',
+    },
+);
+
 sub add_field {
     my $self  = shift;
     my $field = shift;
@@ -28,6 +39,20 @@ sub add_field {
     }
 
     $self->_add_field( $field->name() => $field );
+
+    return;
+}
+
+sub add_group {
+    my $self  = shift;
+    my $group = shift;
+
+    if ( $self->_has_group( $group->name() ) ) {
+        my $name = $group->name();
+        croak "Cannot add two groups with the same name ($name)";
+    }
+
+    $self->_add_group( $group->name() => $group );
 
     return;
 }

@@ -5,10 +5,10 @@ use warnings;
 
 use MooseX::Types -declare => [
     qw(
+        Result
         )
 ];
-use MooseX::Types::Common::Numeric qw( PositiveInt );
-use MooseX::Types::Common::String qw( NonEmptyStr );
-use MooseX::Types::Moose qw(  Defined Int Object Str );
+
+role_type Result, { role => 'Chloro::Role::Result' };
 
 1;

@@ -7,11 +7,7 @@ use namespace::autoclean;
 
 use Chloro::Types qw( Bool CodeRef Str );
 
-has name => (
-    is       => 'ro',
-    isa      => Str,
-    required => 1,
-);
+with 'Chloro::Role::FormComponent';
 
 has type => (
     is       => 'ro',
@@ -37,6 +33,7 @@ has is_secure => (
 my $_default_extractor = sub {
     my $self   = shift;
     my $params = shift;
+    my $form   = shift;
 
     return $params->{ $self->name() };
 };
@@ -47,7 +44,14 @@ has extractor => (
     default => sub {$_default_extractor},
 );
 
-my $_default_validator = sub {1};
+my $_default_validator = sub {
+    my $self   = shift;
+    my $value  = shift;
+    my $params = shift;
+    my $form   = shift;
+
+    return $self->type()->validate($value);
+};
 
 has validator => (
     is      => 'ro',

@@ -12,14 +12,7 @@ use List::MoreUtils qw( all );
 my $form = Chloro::Test::Login->new();
 
 {
-    my %fields = map {
-        $_->name() => {
-            type     => $_->type(),
-            required => $_->is_required(),
-            secure   => $_->is_secure(),
-            ( $_->has_default() ? ( default => $_->default() ) : () ),
-            }
-    } $form->fields();
+    my %fields = map { $_->name() => { $_->dump() } } $form->fields();
 
     is_deeply(
         \%fields, {

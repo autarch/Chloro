@@ -5,7 +5,7 @@ use Moose;
 use namespace::autoclean;
 
 use Chloro::Error::Form;
-use Chloro::Types qw( ArrayRef Bool );
+use Chloro::Types qw( ArrayRef Bool HashRef );
 use List::AllUtils qw( any );
 
 with 'Chloro::Role::ResultSet';
@@ -19,6 +19,13 @@ has _form_errors => (
         form_errors      => 'elements',
         _has_form_errors => 'count',
     },
+);
+
+has _params => (
+    is       => 'ro',
+    isa      => HashRef,
+    init_arg => 'params',
+    required => 1,
 );
 
 has is_valid => (
@@ -42,9 +49,22 @@ sub _build_is_valid {
 sub results_hash {
     my $self = shift;
 
-    return
-        map { $_->field()->name() => $_->value() }
-        grep { $_->has_value() } $self->_result_values();
+    my %hash;
+
+    for my $result ( $self->_result_values() ) {
+        if ( $result->can('group') ) {
+            $hash{ $result->group()->name() }{ $result->key() }
+                = { $result->key_value_pairs() };
+
+            $hash{ $result->group()->repetition_field() }
+                = $self->_params()->{ $result->group()->repetition_field() };
+        }
+        else {
+            %hash = ( %hash, $result->key_value_pairs() );
+        }
+    }
+
+    return %hash;
 }
 
 __PACKAGE__->meta()->make_immutable();

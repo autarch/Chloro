@@ -12,7 +12,7 @@ use Moose::Util::MetaRole;
 use Scalar::Util qw( blessed );
 
 Moose::Exporter->setup_import_methods(
-    with_meta => ['field'],
+    with_meta => [qw( field group )],
 );
 
 sub init_meta {
@@ -60,7 +60,7 @@ sub group {
     push @fields, pop @_ while blessed $_[-1];
 
     my $group = Chloro::Group->new(
-        name => shift,
+        name   => shift,
         fields => \@fields,
         @_,
     );

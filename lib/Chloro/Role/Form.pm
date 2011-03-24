@@ -18,6 +18,12 @@ sub fields {
     return $self->meta()->fields();
 }
 
+sub groups {
+    my $self = shift;
+
+    return $self->meta()->groups();
+}
+
 sub process {
     my $self = shift;
     my ($params) = validated_list(
@@ -27,13 +33,20 @@ sub process {
 
     my %results;
     for my $field ( $self->fields() ) {
-        $results{ $field->name() } =
-            $self->_result_for_field($field, $params);
+        $results{ $field->name() }
+            = $self->_result_for_field( $field, $params );
+    }
+
+    for my $group ( $self->groups() ) {
+        for my $result ( $self->_results_for_group( $group, $params ) ) {
+            $results{ $result->prefix() } = $result;
+        }
     }
 
     my @form_errors = $self->_validate_form($params);
 
     return Chloro::ResultSet->new(
+        params      => $params,
         results     => \%results,
         form_errors => \@form_errors,
     );
@@ -43,8 +56,10 @@ sub _result_for_field {
     my $self   = shift;
     my $field  = shift;
     my $params = shift;
+    my $prefix = shift;
 
-    my ( $value, @errors ) = $self->_validate_field( $field, $params );
+    my ( $value, @errors )
+        = $self->_validate_field( $field, $params, $prefix );
 
     @errors
         = map { Chloro::Error::Field->new( field => $field, error => $_ ) }
@@ -61,8 +76,11 @@ sub _validate_field {
     my $self   = shift;
     my $field  = shift;
     my $params = shift;
+    my $prefix = shift;
 
-    my $value = $field->extractor()->( $field, $params, $self );
+    my $key = join q{.}, grep {defined} $prefix, $field->name();
+    my $value = $field->extractor()->( $field, $key, $params, $self );
+
     $value = $field->default() if !defined $value && $field->has_default();
 
     my @errors;
@@ -85,10 +103,47 @@ sub _validate_field {
     return ( $value, @errors );
 }
 
+sub _results_for_group {
+    my $self   = shift;
+    my $group  = shift;
+    my $params = shift;
+
+    my $keys = $params->{ $group->repetition_field() };
+
+    return
+        map { $self->_result_for_group_by_key( $group, $params, $_ ) }
+        grep { defined && length }
+        ref $keys ? @{$keys} : $keys;
+}
+
+sub _result_for_group_by_key {
+    my $self   = shift;
+    my $group  = shift;
+    my $params = shift;
+    my $key    = shift;
+
+    my $prefix = join q{.}, $group->name(), $key;
+
+    return unless $group->has_data_in_params( $params, $prefix, $self );
+
+    my %results;
+    for my $field ( $group->fields() ) {
+        $results{ $field->name() }
+            = $self->_result_for_field( $field, $params, $prefix );
+    }
+
+    return Chloro::Result::Group->new(
+        group   => $group,
+        key     => $key,
+        prefix  => $prefix,
+        results => \%results,
+    );
+}
+
 sub _validate_form { }
 
 sub _value_is_empty {
-    return defined $_[0] && $_[0] ne q{} ? 0 : 1;
+    return defined $_[0] && length $_[0] ? 0 : 1;
 }
 
 1;

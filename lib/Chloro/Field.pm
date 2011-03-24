@@ -38,10 +38,11 @@ has is_secure => (
 
 my $_default_extractor = sub {
     my $self   = shift;
+    my $key    = shift;
     my $params = shift;
     my $form   = shift;
 
-    return $params->{ $self->name() };
+    return $params->{$key};
 };
 
 has extractor => (
@@ -64,6 +65,18 @@ has validator => (
     isa     => CodeRef,
     default => sub {$_default_validator},
 );
+
+# This exists mostly to make testing easier
+sub dump {
+    my $self = shift;
+
+    return (
+        type     => $self->type(),
+        required => $self->is_required(),
+        secure   => $self->is_secure(),
+        ( $self->has_default() ? ( default => $self->default() ) : () ),
+    );
+}
 
 __PACKAGE__->meta()->make_immutable();
 

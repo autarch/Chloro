@@ -38,6 +38,11 @@ sub add_field {
         croak "Cannot add two fields with the same name ($name)";
     }
 
+    if ( $self->_has_group( $field->name() ) ) {
+        my $name = $field->name();
+        croak "Cannot share a name between a field and a group ($name)";
+    }
+
     $self->_add_field( $field->name() => $field );
 
     return;
@@ -50,6 +55,11 @@ sub add_group {
     if ( $self->_has_group( $group->name() ) ) {
         my $name = $group->name();
         croak "Cannot add two groups with the same name ($name)";
+    }
+
+    if ( $self->_has_field( $group->name() ) ) {
+        my $name = $group->name();
+        croak "Cannot share a name between a field and a group ($name)";
     }
 
     $self->_add_group( $group->name() => $group );

@@ -4,11 +4,11 @@ use Moose::Role;
 
 use namespace::autoclean;
 
-use Chloro::Types qw( Str );
+use Chloro::Types qw( NonEmptyStr );
 
 has name => (
     is       => 'ro',
-    isa      => Str,
+    isa      => NonEmptyStr,
     required => 1,
 );
 

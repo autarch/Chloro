@@ -154,4 +154,26 @@ my $form = Chloro::Test::Address->new();
     );
 }
 
+{
+    my $set = $form->process(
+        params => {
+            allows_mail          => 0,
+            address_id           => [ 42, 'x' ],
+            'address.42.street1' => '100 Some St',
+            'address.42.street2' => 'Apt C',
+            'address.42.city'    => 'Minneapolis',
+            'address.42.state'   => 'MN',
+            'address.x.street1'  => '150 Some St',
+            'address.x.street2'  => undef,
+            'address.x.city'     => undef,
+            'address.x.state'    => undef,
+        }
+    );
+
+    ok(
+        !$set->is_valid(),
+        'the returned result set is not valid (one group is partially empty) '
+    );
+}
+
 done_testing();

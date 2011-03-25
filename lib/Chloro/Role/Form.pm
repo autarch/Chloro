@@ -4,6 +4,7 @@ use Moose::Role;
 
 use namespace::autoclean;
 
+use Chloro::Error::Form;
 use Chloro::ErrorMessage::Invalid;
 use Chloro::ErrorMessage::Missing;
 use Chloro::Result::Field;
@@ -43,7 +44,13 @@ sub process {
         }
     }
 
-    my @form_errors = $self->_validate_form($params);
+    my @form_errors = map {
+        Chloro::Error::Form->new(
+            error => ref $_
+            ? $_
+            : Chloro::ErrorMessage::Invalid->new( message => $_ )
+            )
+    } $self->_validate_form($params);
 
     return Chloro::ResultSet->new(
         params      => $params,

@@ -33,7 +33,7 @@ my $_is_empty_checker = sub {
     my $prefix = shift;
     my $form   = shift;
 
-    return all { defined $params->{$_} && length $params->{$_} }
+    return all { !( defined $params->{$_} && length $params->{$_} ) }
     map { join q{.}, $prefix, $_->name() } $self->fields();
 };
 
@@ -49,7 +49,7 @@ sub has_data_in_params {
     my $prefix = shift;
     my $form   = shift;
 
-    return $self->is_empty_checker()->( $self, $params, $prefix, $form );
+    return ! $self->is_empty_checker()->( $self, $params, $prefix, $form );
 }
 
 sub dump {

@@ -1,6 +1,7 @@
 package Chloro::Error::Field;
 
 use Moose;
+use MooseX::StrictConstructor;
 
 use namespace::autoclean;
 

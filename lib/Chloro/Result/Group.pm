@@ -1,6 +1,7 @@
 package Chloro::Result::Group;
 
 use Moose;
+use MooseX::StrictConstructor;
 
 use namespace::autoclean;
 

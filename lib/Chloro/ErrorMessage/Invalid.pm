@@ -1,6 +1,7 @@
 package Chloro::ErrorMessage::Invalid;
 
 use Moose;
+use MooseX::StrictConstructor;
 
 use namespace::autoclean;
 

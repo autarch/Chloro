@@ -157,7 +157,7 @@ my $form = Chloro::Test::Address->new();
 {
     my $set = $form->process(
         params => {
-            allows_mail          => 0,
+            allows_mail          => 42,
             address_id           => [ 42, 'x' ],
             'address.42.street1' => '100 Some St',
             'address.42.street2' => 'Apt C',
@@ -174,6 +174,61 @@ my $form = Chloro::Test::Address->new();
         !$set->is_valid(),
         'the returned result set is not valid (one group is partially empty) '
     );
+
+    my %errors = $set->field_errors();
+    is(
+        scalar keys %errors, 3,
+        'three fields have errors'
+    );
+
+    ok(
+        $errors{$_},
+        "There is an error for the $_ field"
+        )
+        for
+        qw( allows_mail address.x.city address.x.state );
+
+    ok(
+        !$errors{'address.x.street2'},
+        'No error for missing optional field',
+    );
+
+    is_deeply(
+        _error_breakdown( \%errors ), {
+            allows_mail => [
+                [
+                    'Chloro::ErrorMessage::Invalid',
+                    'The allows_mail field did not contain a valid value.'
+                ]
+            ],
+            'address.x.city' => [
+                [
+                    'Chloro::ErrorMessage::Missing',
+                    'The city field is required.'
+                ]
+            ],
+            'address.x.state' => [
+                [
+                    'Chloro::ErrorMessage::Missing',
+                    'The state field is required.'
+                ]
+            ],
+        },
+        'got the expected type of errors'
+    );
 }
 
 done_testing();
+
+sub _error_breakdown {
+    my $errors = shift;
+
+    my %break;
+
+    for my $key ( keys %{$errors} ) {
+        $break{$key} = [ map { [ ref $_->error(), $_->error()->message() ] }
+                @{ $errors->{$key} } ];
+    }
+
+    return \%break;
+}

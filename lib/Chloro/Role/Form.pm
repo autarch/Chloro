@@ -83,6 +83,8 @@ sub _validate_field {
 
     $value = $field->default() if !defined $value && $field->has_default();
 
+    return if _value_is_empty($value) && ! $field->is_required();
+
     my @errors;
     if ( $field->is_required() && _value_is_empty($value) ) {
         push @errors,

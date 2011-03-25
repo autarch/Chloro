@@ -1,6 +1,7 @@
 package Chloro::ResultSet;
 
 use Moose;
+use MooseX::StrictConstructor;
 
 use namespace::autoclean;
 
@@ -65,6 +66,29 @@ sub results_hash {
     }
 
     return %hash;
+}
+
+sub field_errors {
+    my $self = shift;
+
+    my %errors;
+    for my $result ( grep { !$_->is_valid() } $self->_result_values() ) {
+        if ( $result->can('group') ) {
+            for my $field_result ( grep { !$_->is_valid() }
+                $result->_result_values() ) {
+
+                my $key = join q{.}, $result->prefix(),
+                    $field_result->field()->name();
+
+                $errors{$key} = [ $field_result->errors() ];
+            }
+        }
+        else {
+            $errors{ $result->field()->name() } = [ $result->errors() ];
+        }
+    }
+
+    return %errors;
 }
 
 __PACKAGE__->meta()->make_immutable();

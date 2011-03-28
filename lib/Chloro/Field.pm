@@ -5,7 +5,7 @@ use MooseX::StrictConstructor;
 
 use namespace::autoclean;
 
-use Chloro::Types qw( Bool CodeRef Item Str );
+use Chloro::Types qw( Bool CodeRef Str Value );
 
 with 'Chloro::Role::FormComponent';
 
@@ -18,7 +18,7 @@ has type => (
 
 has default => (
     is        => 'ro',
-    isa       => Item,
+    isa       => Value | CodeRef,
     predicate => 'has_default',
 );
 
@@ -76,6 +76,18 @@ sub dump {
         secure   => $self->is_secure(),
         ( $self->has_default() ? ( default => $self->default() ) : () ),
     );
+}
+
+sub generate_default {
+    my $self   = shift;
+    my $params = shift;
+    my $prefix = shift;
+
+    my $default = $self->default();
+
+    return ref $default
+        ? $self->$default( $params, $prefix )
+        : $default;
 }
 
 __PACKAGE__->meta()->make_immutable();

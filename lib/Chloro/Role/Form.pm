@@ -88,7 +88,8 @@ sub _validate_field {
     my $key = join q{.}, grep {defined} $prefix, $field->name();
     my $value = $field->extractor()->( $field, $key, $params, $self );
 
-    $value = $field->default() if !defined $value && $field->has_default();
+    $value = $field->generate_default( $params, $prefix )
+        if !defined $value && $field->has_default();
 
     return if _value_is_empty($value) && ! $field->is_required();
 

@@ -90,6 +90,12 @@ sub generate_default {
         : $default;
 }
 
+sub value_is_valid {
+    my $self   = shift;
+
+    return $self->validator()->( $self, @_ );
+}
+
 __PACKAGE__->meta()->make_immutable();
 
 1;

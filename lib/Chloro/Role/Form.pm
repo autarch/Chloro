@@ -99,8 +99,7 @@ sub _validate_field {
             Chloro::ErrorMessage::Missing->new(
             message => 'The ' . $field->name() . ' field is required.' );
     }
-    elsif ( my $msg
-        = $field->validator()->( $field, $value, $params, $self ) ) {
+    elsif ( $field->value_is_valid( $value, $params, $self ) ) {
 
         # XXX - we are ignoring the Moose-returned message for now, because
         # it's not at all end user friendly.

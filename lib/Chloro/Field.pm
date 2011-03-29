@@ -57,7 +57,8 @@ my $_default_validator = sub {
     my $params = shift;
     my $form   = shift;
 
-    return $self->type()->validate($value);
+    # The validate() method returns false on valid (bah)
+    return $self->type()->validate($value) ? 0 : 1;
 };
 
 has validator => (

@@ -6,8 +6,6 @@ use Test::More 0.88;
 use lib 't/lib';
 
 use Chloro::Test::Validator;
-use Chloro::Types qw( Bool Str );
-use List::MoreUtils qw( all );
 
 my $form = Chloro::Test::Validator->new();
 

@@ -86,12 +86,16 @@ sub _validate_field {
     my $prefix = shift;
 
     my $key = join q{.}, grep {defined} $prefix, $field->name();
-    my $value = $field->extractor()->( $field, $key, $params, $self );
+
+    my $extractor = $field->extractor();
+    my $value = $self->$extractor( $key, $params, $field );
 
     $value = $field->generate_default( $params, $prefix )
         if !defined $value && $field->has_default();
 
     return if _value_is_empty($value) && ! $field->is_required();
+
+    my $validator = $field->validator();
 
     my @errors;
     if ( $field->is_required() && _value_is_empty($value) ) {
@@ -99,17 +103,44 @@ sub _validate_field {
             Chloro::ErrorMessage::Missing->new(
             message => 'The ' . $field->name() . ' field is required.' );
     }
-    elsif ( ! $field->value_is_valid( $value, $params, $self ) ) {
+    else {
 
-        # XXX - we are ignoring the Moose-returned message for now, because
-        # it's not at all end user friendly.
-        push @errors,
-            Chloro::ErrorMessage::Invalid->new( message => 'The '
-                . $field->name()
-                . ' field did not contain a valid value.' );
+        # The validate() method returns false on valid (bah)
+        if ( $field->type()->validate($value) ) {
+
+            # XXX - we are ignoring the Moose-returned message for now, because
+            # it's not at all end user friendly.
+            push @errors,
+                Chloro::ErrorMessage::Invalid->new( message => 'The '
+                    . $field->name()
+                    . ' field did not contain a valid value.' );
+        }
+        elsif ( my $msg = $self->$validator( $value, $params, $field ) ) {
+            push @errors,
+                Chloro::ErrorMessage::Invalid->new( message => $msg );
+
+        }
     }
 
     return ( $value, @errors );
+}
+
+sub extract_field_value {
+    my $self   = shift;
+    my $key    = shift;
+    my $params = shift;
+    my $field  = shift;
+
+    return $params->{$key};
+}
+
+sub errors_for_field_value {
+    # my $self = shift;
+    # my $value = shift;
+    # my $params = shift;
+    # my $field = shift;
+
+    return;
 }
 
 sub _results_for_group {

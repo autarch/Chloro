@@ -5,7 +5,7 @@ use MooseX::StrictConstructor;
 
 use namespace::autoclean;
 
-use Chloro::Types qw( Bool CodeRef Str Value );
+use Chloro::Types qw( Bool CodeRef NonEmptySimpleStr Str Value );
 
 with 'Chloro::Role::FormComponent';
 
@@ -36,35 +36,16 @@ has is_secure => (
     default  => 0,
 );
 
-my $_default_extractor = sub {
-    my $self   = shift;
-    my $key    = shift;
-    my $params = shift;
-    my $form   = shift;
-
-    return $params->{$key};
-};
-
 has extractor => (
     is      => 'ro',
-    isa     => CodeRef,
-    default => sub {$_default_extractor},
+    isa     => NonEmptySimpleStr | CodeRef,
+    default => 'extract_field_value',
 );
-
-my $_default_validator = sub {
-    my $self   = shift;
-    my $value  = shift;
-    my $params = shift;
-    my $form   = shift;
-
-    # The validate() method returns false on valid (bah)
-    return $self->type()->validate($value) ? 0 : 1;
-};
 
 has validator => (
     is      => 'ro',
-    isa     => CodeRef,
-    default => sub {$_default_validator},
+    isa     => NonEmptySimpleStr | CodeRef,
+    default => 'errors_for_field_value',
 );
 
 # This exists mostly to make testing easier
@@ -89,12 +70,6 @@ sub generate_default {
     return ref $default
         ? $self->$default( $params, $prefix )
         : $default;
-}
-
-sub value_is_valid {
-    my $self   = shift;
-
-    return $self->validator()->( $self, @_ );
 }
 
 __PACKAGE__->meta()->make_immutable();

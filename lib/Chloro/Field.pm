@@ -6,6 +6,7 @@ use MooseX::StrictConstructor;
 use namespace::autoclean;
 
 use Chloro::Types qw( Bool CodeRef NonEmptySimpleStr Str Value );
+use Moose::Util::TypeConstraints;
 
 with 'Chloro::Role::FormComponent';
 
@@ -47,6 +48,18 @@ has validator => (
     isa     => NonEmptySimpleStr | CodeRef,
     default => 'errors_for_field_value',
 );
+
+override BUILDARGS => sub {
+    my $class = shift;
+
+    my $p = super();
+
+    $p->{isa}
+        = Moose::Util::TypeConstraints::find_or_create_isa_type_constraint(
+        $p->{isa} );
+
+    return $p;
+};
 
 # This exists mostly to make testing easier
 sub dump {

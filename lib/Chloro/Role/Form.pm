@@ -85,10 +85,8 @@ sub _validate_field {
     my $params = shift;
     my $prefix = shift;
 
-    my $key = join q{.}, grep {defined} $prefix, $field->name();
-
     my $extractor = $field->extractor();
-    my $value = $self->$extractor( $key, $params, $field );
+    my $value = $self->$extractor( $params, $prefix, $field );
 
     $value = $field->generate_default( $params, $prefix )
         if !defined $value && $field->has_default();
@@ -127,18 +125,20 @@ sub _validate_field {
 
 sub extract_field_value {
     my $self   = shift;
-    my $key    = shift;
     my $params = shift;
+    my $prefix = shift;
     my $field  = shift;
+
+    my $key = join q{.}, grep {defined} $prefix, $field->name();
 
     return $params->{$key};
 }
 
 sub errors_for_field_value {
-    # my $self = shift;
-    # my $value = shift;
+    # my $self   = shift;
+    # my $value  = shift;
     # my $params = shift;
-    # my $field = shift;
+    # my $field  = shift;
 
     return;
 }

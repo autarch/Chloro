@@ -19,17 +19,22 @@ sub init_meta {
     shift;
     my %p = @_;
 
-    Moose->init_meta(%p);
-
     Moose::Util::MetaRole::apply_metaroles(
         for             => $p{for_class},
         class_metaroles => { class => ['Chloro::Trait::Class'] },
+        role_metaroles  => {
+            role                 => ['Chloro::Trait::Role'],
+            application_to_class => ['Chloro::Trait::Application::ToClass'],
+            application_to_role  => ['Chloro::Trait::Application::ToRole'],
+        },
     );
 
-    Moose::Util::MetaRole::apply_base_class_roles(
-        for   => $p{for_class},
-        roles => ['Chloro::Role::Form'],
-    );
+    if ( Class::MOP::class_of( $p{for_class} )->isa('Moose::Meta::Class') ) {
+        Moose::Util::MetaRole::apply_base_class_roles(
+            for   => $p{for_class},
+            roles => ['Chloro::Role::Form'],
+        );
+    }
 
     return;
 }
@@ -78,6 +83,7 @@ __END__
 
     package MyApp::Form::Login;
 
+    use Moose;
     use Chloro;
 
     field username => (

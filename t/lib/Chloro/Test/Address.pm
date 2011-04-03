@@ -1,6 +1,8 @@
 package Chloro::Test::Address;
 
+use Moose;
 use Chloro;
+
 use Chloro::Types qw( Bool Str );
 
 field allows_mail => (

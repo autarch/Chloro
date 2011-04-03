@@ -1,6 +1,8 @@
 package Chloro::Test::CompoundDate;
 
+use Moose;
 use Chloro;
+
 use Chloro::Types qw( Str );
 
 field date => (

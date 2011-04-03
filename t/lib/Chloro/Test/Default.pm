@@ -1,6 +1,8 @@
 package Chloro::Test::Login;
 
+use Moose;
 use Chloro;
+
 use Chloro::Types qw( ArrayRef Int );
 
 field foo => (

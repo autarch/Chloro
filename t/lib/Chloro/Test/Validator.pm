@@ -1,6 +1,8 @@
 package Chloro::Test::Validator;
 
+use Moose;
 use Chloro;
+
 use Chloro::Types qw( Int );
 
 field min => (

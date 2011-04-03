@@ -1,5 +1,6 @@
 package Chloro::Test::User;
 
+use Moose;
 use Chloro;
 
 use Chloro::ErrorMessage::Missing;

@@ -1,6 +1,8 @@
 package Chloro::Test::DateFromStr;
 
+use Moose;
 use Chloro;
+
 use Chloro::Types qw( Str );
 
 use DateTime;

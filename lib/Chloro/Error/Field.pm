@@ -8,11 +8,12 @@ use namespace::autoclean;
 use Chloro::Field;
 use Chloro::Types qw( NonEmptyStr );
 
+with 'Chloro::Role::Error';
+
 has field => (
     is       => 'ro',
     isa      => 'Chloro::Field',
     required => 1,
-    weak_ref => 1,
 );
 
 has error => (

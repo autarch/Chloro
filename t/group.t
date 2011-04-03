@@ -198,7 +198,7 @@ my $form = Chloro::Test::Address->new();
             allows_mail => [
                 [
                     'Chloro::ErrorMessage::Invalid',
-                    'The allows_mail field did not contain a valid value.'
+                    'The allows mail field did not contain a valid value.'
                 ]
             ],
             'address.x.city' => [

@@ -12,4 +12,21 @@ has name => (
     required => 1,
 );
 
+has human_name => (
+    is      => 'ro',
+    isa     => NonEmptyStr,
+    lazy    => 1,
+    builder => '_build_human_name',
+);
+
+sub _build_human_name {
+    my $self = shift;
+
+    my $name = $self->name();
+
+    $name =~ s/_/ /g;
+
+    return $name;
+}
+
 1;

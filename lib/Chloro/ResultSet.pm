@@ -50,17 +50,32 @@ sub _build_is_valid {
 sub results_hash {
     my $self = shift;
 
+    return $self->_results_hash();
+}
+
+sub secure_results_hash {
+    my $self = shift;
+
+    return $self->_results_hash('skip secure');
+}
+
+sub _results_hash {
+    my $self        = shift;
+    my $skip_secure = shift;
+
     my %hash;
 
     for my $result ( $self->_result_values() ) {
         if ( $result->can('group') ) {
             $hash{ $result->group()->name() }{ $result->key() }
-                = { $result->key_value_pairs() };
+                = { $result->key_value_pairs($skip_secure) };
 
             $hash{ $result->group()->repetition_field() }
                 = $self->_params()->{ $result->group()->repetition_field() };
         }
         else {
+            next if $skip_secure && $result->field()->is_secure();
+
             %hash = ( %hash, $result->key_value_pairs() );
         }
     }
@@ -89,6 +104,14 @@ sub field_errors {
     }
 
     return %errors;
+}
+
+sub all_errors {
+    my $self = shift;
+
+    my %field_errors = $self->field_errors();
+
+    return $self->form_errors(), map { @{$_} } values %field_errors;
 }
 
 __PACKAGE__->meta()->make_immutable();

@@ -5,8 +5,7 @@ use MooseX::StrictConstructor;
 
 use namespace::autoclean;
 
-use Chloro::Types qw( ArrayRef CodeRef Str );
-use List::AllUtils qw( all );
+use Chloro::Types qw( ArrayRef CodeRef NonEmptySimpleStr Str );
 
 with 'Chloro::Role::FormComponent';
 
@@ -27,30 +26,11 @@ has repetition_field => (
     required => 1,
 );
 
-my $_is_empty_checker = sub {
-    my $self   = shift;
-    my $params = shift;
-    my $prefix = shift;
-    my $form   = shift;
-
-    return all { !( defined $params->{$_} && length $params->{$_} ) }
-    map { join q{.}, $prefix, $_->name() } $self->fields();
-};
-
 has is_empty_checker => (
     is      => 'ro',
-    isa     => CodeRef,
-    default => sub {$_is_empty_checker},
+    isa     => NonEmptySimpleStr,
+    default => 'group_is_empty',
 );
-
-sub has_data_in_params {
-    my $self   = shift;
-    my $params = shift;
-    my $prefix = shift;
-    my $form   = shift;
-
-    return ! $self->is_empty_checker()->( $self, $params, $prefix, $form );
-}
 
 sub dump {
     my $self = shift;

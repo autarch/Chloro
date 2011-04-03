@@ -11,6 +11,7 @@ use Chloro::Result::Field;
 use Chloro::Result::Group;
 use Chloro::ResultSet;
 use Chloro::Types qw( HashRef );
+use List::AllUtils qw( all );
 use MooseX::Params::Validate qw( validated_list );
 
 sub fields {
@@ -50,7 +51,7 @@ sub process {
             ? $_
             : Chloro::ErrorMessage::Invalid->new( message => $_ )
             )
-    } $self->_validate_form($params);
+    } $self->_validate_form( $params, \%results );
 
     return Chloro::ResultSet->new(
         params      => $params,
@@ -99,7 +100,7 @@ sub _validate_field {
     if ( $field->is_required() && _value_is_empty($value) ) {
         push @errors,
             Chloro::ErrorMessage::Missing->new(
-            message => 'The ' . $field->name() . ' field is required.' );
+            message => 'The ' . $field->human_name() . ' field is required.' );
     }
     else {
 
@@ -110,13 +111,14 @@ sub _validate_field {
             # it's not at all end user friendly.
             push @errors,
                 Chloro::ErrorMessage::Invalid->new( message => 'The '
-                    . $field->name()
+                    . $field->human_name()
                     . ' field did not contain a valid value.' );
         }
-        elsif ( my $msg = $self->$validator( $value, $params, $field ) ) {
+        elsif ( my $msg
+            = $self->$validator( $value, $params, $prefix, $field ) ) {
+
             push @errors,
                 Chloro::ErrorMessage::Invalid->new( message => $msg );
-
         }
     }
 
@@ -138,6 +140,7 @@ sub errors_for_field_value {
     # my $self   = shift;
     # my $value  = shift;
     # my $params = shift;
+    # my $prefix = shift;
     # my $field  = shift;
 
     return;
@@ -164,7 +167,8 @@ sub _result_for_group_by_key {
 
     my $prefix = join q{.}, $group->name(), $key;
 
-    return unless $group->has_data_in_params( $params, $prefix, $self );
+    my $checker = $group->is_empty_checker();
+    return if $self->$checker( $params, $prefix, $group );
 
     my %results;
     for my $field ( $group->fields() ) {
@@ -178,6 +182,16 @@ sub _result_for_group_by_key {
         prefix  => $prefix,
         results => \%results,
     );
+}
+
+sub group_is_empty {
+    my $self   = shift;
+    my $params = shift;
+    my $prefix = shift;
+    my $group  = shift;
+
+    return all { !( defined $params->{$_} && length $params->{$_} ) }
+    map { join q{.}, $prefix, $_->name() } $group->fields();
 }
 
 sub _validate_form { }

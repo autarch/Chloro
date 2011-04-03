@@ -7,6 +7,8 @@ use namespace::autoclean;
 
 use Chloro::Field;
 
+with 'Chloro::Role::Error';
+
 has error => (
     is       => 'ro',
     does     => 'Chloro::Role::ErrorMessage',

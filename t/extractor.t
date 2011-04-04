@@ -19,7 +19,7 @@ my $form = Chloro::Test::CompoundDate->new();
     );
 
     is_deeply(
-        { $set->results_hash() },
+        $set->results_as_hash(),
         { date => '2011-3-31' },
         'date is extracted from y/m/d fields'
     );

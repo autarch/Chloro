@@ -87,8 +87,7 @@ my $form = Chloro::Test::Address->new();
     );
 
     is_deeply(
-        { $set->results_hash() },
-        {
+        $set->results_as_hash(), {
             allows_mail => 0,
             address     => {
                 42 => {
@@ -106,7 +105,7 @@ my $form = Chloro::Test::Address->new();
             },
             address_id => [ 42, 'x' ],
         },
-        'results_hash returns expected values'
+        'results_as_hash returns expected values'
     );
 }
 
@@ -137,8 +136,7 @@ my $form = Chloro::Test::Address->new();
     );
 
     is_deeply(
-        { $set->results_hash() },
-        {
+        $set->results_as_hash(), {
             allows_mail => 0,
             address     => {
                 42 => {
@@ -150,7 +148,7 @@ my $form = Chloro::Test::Address->new();
             },
             address_id => [ 42, 'x' ],
         },
-        'results_hash returns expected values (empty group is ignored)'
+        'results_as_hash returns expected values (empty group is ignored)'
     );
 }
 

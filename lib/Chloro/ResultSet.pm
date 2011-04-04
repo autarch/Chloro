@@ -47,13 +47,13 @@ sub _build_is_valid {
     return 1;
 }
 
-sub results_hash {
+sub results_as_hash {
     my $self = shift;
 
     return $self->_results_hash();
 }
 
-sub secure_results_hash {
+sub secure_results_as_hash {
     my $self = shift;
 
     return $self->_results_hash('skip secure');
@@ -80,7 +80,7 @@ sub _results_hash {
         }
     }
 
-    return %hash;
+    return \%hash;
 }
 
 sub field_errors {

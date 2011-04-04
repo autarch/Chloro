@@ -19,8 +19,7 @@ my $form = Chloro::Test::Login->new();
     my $set = $form->process( params => \%params );
 
     is_deeply(
-        { $set->results_hash() },
-        {
+        $set->results_as_hash(), {
             foo => 42,
             bar => [],
             baz => {

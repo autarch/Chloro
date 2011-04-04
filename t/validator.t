@@ -18,8 +18,7 @@ my $form = Chloro::Test::Validator->new();
     );
 
     is_deeply(
-        { $set->results_hash() },
-        {
+        $set->results_as_hash(), {
             min => 1,
             max => 10,
         },

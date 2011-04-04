@@ -106,13 +106,13 @@ __END__
         my $resultset = $form->process( params => $submitted_params );
 
         if ( $resultset->is_valid() ) {
-            my %login = $resultset->results_hash();
+            my $login = $resultset->results_as_hash();
 
-            # Do something with $login{username} & $login{password}
+            # Do something with $login->{username} & $login->{password}
         }
         else {
             # Errors that are not specific to just one field
-            my @form_errors = $resulset->form_errors();
+            my @form_errors = $resultset->form_errors();
 
             # Errors keyed by specific field names
             my %field_errors = $resultset->field_errors();
@@ -187,12 +187,6 @@ well as some other optional parameters.
 
         return 'The two password fields must match.';
     }
-
-=head2 Fields from Roles
-
-Currently, Chloro expects each form class to define all of its fields in the
-class itself. Allowing fields to be added by consuming roles is on my todo
-list.
 
 =head1 FIELDS
 

@@ -23,12 +23,12 @@ my $form = Chloro::Test::DateFromStr->new();
         }
     );
 
-    my %results = $set->results_hash();
+    my $results = $set->results_as_hash();
 
-    isa_ok( $results{date}, 'DateTime', 'date field result' );
+    isa_ok( $results->{date}, 'DateTime', 'date field result' );
 
     is_deeply(
-        { $set->results_hash() },
+        $results,
         { date => '2011-03-31T00:00:00' },
         'date is extracted from y/m/d fields and returned as DateTime object'
     );

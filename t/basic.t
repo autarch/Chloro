@@ -57,13 +57,12 @@ my $form = Chloro::Test::Login->new();
     );
 
     is_deeply(
-        { $set->results_hash() },
-        {
+        $set->results_as_hash(), {
             username => 'foo',
             password => 'bar',
             remember => 0,
         },
-        'results_hash returns expected values'
+        'results_as_hash returns expected values'
     );
 }
 
@@ -77,13 +76,12 @@ my $form = Chloro::Test::Login->new();
     );
 
     is_deeply(
-        { $set->results_hash() },
-        {
+        $set->results_as_hash(), {
             username => 'foo',
             password => 'bar',
             remember => 1,
         },
-        'results_hash returns expected values (remember == 1)'
+        'results_as_hash returns expected values (remember == 1)'
     );
 }
 

@@ -53,10 +53,19 @@ sub process {
             )
     } $self->_validate_form( $params, \%results );
 
+    return $self->_make_resultset( $params, \%results, \@form_errors );
+}
+
+sub _make_resultset {
+    my $self        = shift;
+    my $params      = shift;
+    my $results     = shift;
+    my $form_errors = shift;
+
     return Chloro::ResultSet->new(
         params      => $params,
-        results     => \%results,
-        form_errors => \@form_errors,
+        results     => $results,
+        form_errors => $form_errors,
     );
 }
 

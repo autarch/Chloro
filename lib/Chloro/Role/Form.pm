@@ -62,11 +62,15 @@ sub _make_resultset {
     my $results     = shift;
     my $form_errors = shift;
 
-    return Chloro::ResultSet->new(
+    return $self->_resultset_class()->new(
         params      => $params,
         results     => $results,
         form_errors => $form_errors,
     );
+}
+
+sub _resultset_class {
+    return 'Chloro::ResultSet';
 }
 
 sub _result_for_field {
@@ -101,7 +105,16 @@ sub _validate_field {
     $value = $field->generate_default( $params, $prefix )
         if !defined $value && $field->has_default();
 
-    return if _value_is_empty($value) && ! $field->is_required();
+    # A missing boolean should be treated as false (an unchecked checkbox does
+    # not show up in user-submitted parameters).
+    if ( _value_is_empty($value) ) {
+        if ( $field->type()->is_a_type_of('Bool') ) {
+            $value = 0;
+        }
+        elsif ( ! $field->is_required() ) {
+            return;
+        }
+    }
 
     my $validator = $field->validator();
 

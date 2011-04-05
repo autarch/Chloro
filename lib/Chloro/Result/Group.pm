@@ -50,7 +50,7 @@ sub key_value_pairs {
     my $skip_secure = shift;
 
     return map { $_->key_value_pairs() }
-        grep { $skip_secure ? !$_->field()->secure() : 1 }
+        grep { $skip_secure ? !$_->field()->is_secure() : 1 }
         $self->_result_values();
 }
 

@@ -12,9 +12,9 @@ has _fields => (
     init_arg => undef,
     default  => sub { Tie::IxHash->new() },
     handles  => {
-        _add_field => 'STORE',
-        _has_field => 'EXISTS',
-        fields     => 'Values',
+        _add_field   => 'STORE',
+        _has_field   => 'EXISTS',
+        local_fields => 'Values',
     },
 );
 
@@ -23,9 +23,9 @@ has _groups => (
     init_arg => undef,
     default  => sub { Tie::IxHash->new() },
     handles  => {
-        _add_group => 'STORE',
-        _has_group => 'EXISTS',
-        groups     => 'Values',
+        _add_group   => 'STORE',
+        _has_group   => 'EXISTS',
+        local_groups => 'Values',
     },
 );
 
@@ -65,6 +65,15 @@ sub add_group {
     $self->_add_group( $group->name() => $group );
 
     return;
+}
+
+sub _make_field {
+    my $self = shift;
+
+    return Chloro::Field->new(
+        name => shift,
+        @_,
+    );
 }
 
 1;

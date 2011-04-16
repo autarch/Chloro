@@ -113,6 +113,45 @@ my $form = Chloro::Test::Address->new();
     my $set = $form->process(
         params => {
             allows_mail          => 0,
+            address_id           => 42,
+            'address.42.street1' => '100 Some St',
+            'address.42.street2' => 'Apt C',
+            'address.42.city'    => 'Minneapolis',
+            'address.42.state'   => 'MN',
+        }
+    );
+
+    ok(
+        $set->is_valid(),
+        'the returned result set says the form values are valid'
+    );
+
+    ok(
+        ( all { $_->is_valid() } $set->_result_values() ),
+        'all individual results are marked as valid'
+    );
+
+    is_deeply(
+        $set->results_as_hash(), {
+            allows_mail => 0,
+            address     => {
+                42 => {
+                    street1 => '100 Some St',
+                    street2 => 'Apt C',
+                    city    => 'Minneapolis',
+                    state   => 'MN',
+                },
+            },
+            address_id => [42],
+        },
+        'results_as_hash returns expected values'
+    );
+}
+
+{
+    my $set = $form->process(
+        params => {
+            allows_mail          => 0,
             address_id           => [ 42, 'x' ],
             'address.42.street1' => '100 Some St',
             'address.42.street2' => 'Apt C',

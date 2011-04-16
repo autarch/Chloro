@@ -70,8 +70,11 @@ sub _results_hash {
             $hash{ $result->group()->name() }{ $result->key() }
                 = { $result->key_value_pairs($skip_secure) };
 
-            $hash{ $result->group()->repetition_field() }
+            my $rep_vals
                 = $self->_params()->{ $result->group()->repetition_field() };
+
+            $hash{ $result->group()->repetition_field() }
+                = ref $rep_vals ? $rep_vals : [$rep_vals];
         }
         else {
             next if $skip_secure && $result->field()->is_secure();

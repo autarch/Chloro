@@ -42,10 +42,7 @@ sub init_meta {
 sub field {
     my $meta = shift;
 
-    my $field = Chloro::Field->new(
-        name => shift,
-        @_,
-    );
+    my $field = $meta->_make_field(@_);
 
     # Called inside a call to group()
     if (wantarray) {
@@ -106,7 +103,7 @@ __END__
         my $resultset = $form->process( params => $submitted_params );
 
         if ( $resultset->is_valid() ) {
-            my $login = $resultset->results_as_hash();
+            my $login = $resultset->results();
 
             # Do something with $login->{username} & $login->{password}
         }
@@ -140,19 +137,13 @@ Out of the box, it does not talk to your database, nor does it know anything
 about rendering HTML. However, it is designed so that these features could be
 provided by extensions.
 
-=head1 DEFINING A BASIC FORM
+=head1 OVERVIEW
 
-A form is defined as a unique class, so you might have C<MyApp::Form::Login>,
-C<MyApp::Form::User>, etc. To make a form class, just C<use Chloro>.
-
-This will make your class a form, and you also get all the exports from Moose,
-meaning you can define regular attributes, consume roles, etc.
-
-A form consists of one or more fields. A field is a name plus a data type, as
-well as some other optional parameters.
+Chloro starts with forms. A form is a class which uses Chloro (and Moose).
 
     package MyApp::Form::User;
 
+    use Moose;
     use Chloro;
 
     field username => (
@@ -160,111 +151,39 @@ well as some other optional parameters.
         required => 1,
     );
 
-    field email_address => (
-        isa      => 'EmailAddress',
-        required => 1,
-    );
+In order to validate data against a form, you instantiate a form object and
+call C<< $form->process() >>:
 
-    field password => (
-        isa    => 'Str',
-        secure => 1,
-    );
+    my $form = MyApp::Form::User->new();
+    my $resultset = $form->process( params => $params );
 
-    field password2 => (
-        isa    => 'Str',
-        secure => 1,
-    );
+The C<$params> are a hash reference where the keys are field names and the
+values are field values. Under the hood, you can define a variety of parameter
+munging and validation methods, or just use the defaults.
 
-    sub _validate_form {
-        my $self   = shift;
-        my $params = shift;
+The C<process()> method returns a L<Chloro::ResultSet> object. This object can
+tell you whether the submitted parameters were valid. If they weren't, you can
+dig into the errors associated with specific fields. You can also define
+validations against the form as a whole, and the resultset will have those
+errors too.
 
-        # Use a bare return if form is valid.
-        return if ...;
+    if ( $resultset->is_valid() ) {
+        ...
+    }
+    else {
+        my $result = $resultset->result_for('username');
 
-        # Check that passwords are the same. Maybe check that password is
-        # present if required. Return a list of error messages.
-
-        return 'The two password fields must match.';
+        print $_->message() for $result->errors();
     }
 
-=head1 FIELDS
+If the submission was valid, you can get the results as a hash reference:
 
-A field requires a name and a type. The type is defined as a Moose type
-constraint, not as an HTML widget type. So for example, a field can be a
-C<Str>, C<Int>, C<ArrayRef[Int]>, or a L<DateTime>.
+    my $hash = $resultset->results();
 
-Field values are extracted from the user-submitted params for processing. By
-default, the extractor looks for a key matching the field's name, but you can
-define your own extraction logic. For example, you could define a L<DateTime>
-field that looked for three separate keys, C<day>, C<month>, C<year>, and used
-those to construct a L<DateTime> object.
+That's the basic workflow using Chloro.
 
-Fields are declared with the C<field()> subroutine exported by Chloro. This
-subroutine allows the following parameters:
+=head1 MANUAL
 
-=over 4
+If you're new to Chloro, you should start by reading L<Chloro::Manual>.
 
-=item * isa
-
-This must be a L<Moose> type constraint. This can be passed as a string, a
-type constraint object, or as a L<MooseX::Types> type.
-
-This type will be used to validate the field when it is submitted.
-
-=item * default
-
-The default value for the field. This can either be a non-reference scalar, or
-a subroutine reference.
-
-If this is a subroutine reference, it will be called as a method on the field
-object. It will also receive the parameters being processed and the field
-prefix as arguments.
-
-Field prefixes only matter for field groups, which are documented later.
-
-=item * required
-
-A field can be made required. If a required field is missing, the form
-submission is not valid.
-
-=item * secure
-
-XXX - do something with this
-
-=item * extractor
-
-This is a subroutine reference that defines how the field's value is extracted
-from the hash reference of parameters that a form processes.
-
-This subroutine will be called as a method on the L<Chloro::Field> object
-itself. It will receive three additional parameters.
-
-The first is a string containing the field's expected name in the
-parameters. For a simple field, this is the same as the field's name. For a
-field in a group, this key includes a prefix to uniquely identify that field.
-
-The second parameter is the hash reference of data submitted to the form. The
-third parameter is the form object itself.
-
-By default, the extractor simply return the given from the form data. You can
-override this to implement a more complex extraction strategy. For example,
-you might extract a date from three separate field (year, month, day).
-
-=item * validator
-
-This is a subroutine reference that defines how the field's value is validated.
-
-This subroutine will be called as a method on the L<Chloro::Field> object
-itself. It will receive three additional parameters.
-
-The first is the value being validated. The second parameter is the hash
-reference of data submitted to the form. The third parameter is the form
-object itself.
-
-By default, this simply uses the field's associated
-L<Moose::Meta::TypeConstraint> object to do validation, but you can add
-additional logic here. For example, you could validate that a start date is
-earlier than an end date.
-
-=back
+=cut

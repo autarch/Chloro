@@ -55,12 +55,12 @@ my $form = Chloro::Test::User->new();
 
     is_deeply(
         [
-            map { [ ref $_->error(), $_->error()->message() ] }
+            map { [ $_->message()->category(), $_->message()->text() ] }
                 $set->form_errors()
         ],
         [
             [
-                'Chloro::ErrorMessage::Invalid',
+                'invalid',
                 'The two password fields must match.'
             ]
         ],
@@ -85,12 +85,12 @@ my $form = Chloro::Test::User->new();
 
     is_deeply(
         [
-            map { [ ref $_->error(), $_->error()->message() ] }
+            map { [ $_->message()->category(), $_->message()->text() ] }
                 $set->form_errors()
         ],
         [
             [
-                'Chloro::ErrorMessage::Invalid',
+                'invalid',
                 'The two password fields must match.'
             ]
         ],
@@ -115,16 +115,16 @@ my $form = Chloro::Test::User->new();
 
     is_deeply(
         [
-            map { [ ref $_->error(), $_->error()->message() ] }
+            map { [ $_->message()->category(), $_->message()->text() ] }
                 $set->form_errors()
         ],
         [
             [
-                'Chloro::ErrorMessage::Invalid',
+                'invalid',
                 'The two password fields must match.'
             ],
             [
-                'Chloro::ErrorMessage::Missing',
+                'missing',
                 'Special is no good.'
             ]
         ],

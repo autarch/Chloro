@@ -40,13 +40,13 @@ has is_secure => (
 has extractor => (
     is      => 'ro',
     isa     => NonEmptySimpleStr,
-    default => 'extract_field_value',
+    default => '_extract_field_value',
 );
 
 has validator => (
     is      => 'ro',
     isa     => NonEmptySimpleStr,
-    default => 'errors_for_field_value',
+    default => '_errors_for_field_value',
 );
 
 override BUILDARGS => sub {
@@ -60,18 +60,6 @@ override BUILDARGS => sub {
 
     return $p;
 };
-
-# This exists mostly to make testing easier
-sub dump {
-    my $self = shift;
-
-    return (
-        type     => $self->type(),
-        required => $self->is_required(),
-        secure   => $self->is_secure(),
-        ( $self->has_default() ? ( default => $self->default() ) : () ),
-    );
-}
 
 sub generate_default {
     my $self   = shift;
@@ -115,6 +103,151 @@ sub STORABLE_thaw {
     return;
 }
 
+# This exists mostly to make testing easier
+sub dump {
+    my $self = shift;
+
+    return (
+        type     => $self->type(),
+        required => $self->is_required(),
+        secure   => $self->is_secure(),
+        ( $self->has_default() ? ( default => $self->default() ) : () ),
+    );
+}
+
 __PACKAGE__->meta()->make_immutable();
 
 1;
+
+# ABSTRACT: A field in a form
+
+__END__
+
+=head1 SYNOPSIS
+
+See L<Chloro>.
+
+=head1 DESCRIPTION
+
+This class represents a field in a form.
+
+=head1 METHODS
+
+This class has the following methods:
+
+=head2 Chloro::Field->new()
+
+You'll probably make fields by using the C<field()> subroutine exported by
+L<Chloro>, but you can make one using this constructor.
+
+The constructor accepts the following parameters:
+
+=over 4
+
+=item * name
+
+The name of the field. This is required.
+
+=item * human_name
+
+A more friendly version of the name. This defaults to the same value as
+C<name>. This value will be used when generating error messages for this
+field.
+
+=item * isa
+
+This must be a Moose type constraint. You can pass a
+L<Moose::Meta::TypeConstraint> object, a type name, or a type created with
+L<MooseX::Types>.
+
+Just like with L<Moose> attributes, an unknown name is treated as a class name.
+
+=item * default
+
+The default value for the field. Like Moose attributes, this can either be a
+non-reference value of a subroutine reference.
+
+A subroutine reference will be called as a method on the field object, and
+will receive two additional arguments.
+
+The first argument is the parameter passed to the C<< $form->process() >>
+method.
+
+The second is the prefix for the field, if it is part of a group.
+
+=item * required
+
+A boolean indicating whether the field is required. Defaults to false.
+
+=item * secure
+
+A boolean indicating whether the field contains sensitive data. Defaults to
+false.
+
+=item * extractor
+
+This is an optional method I<on the field's form> that will be used to extract
+this field's value.
+
+=item * validator
+
+This is an optional method I<on the field's form> that will be used to
+validate this field's value.
+
+=back
+
+=head2 $field->name()
+
+The name as passed to the constructor.
+
+=head2 $field->human_name()
+
+A more friendly name, which defaults to the same value as C<< $field->name()
+>>.
+
+=head2 $field->type()
+
+This returns a L<Moose::Meta::TypeConstraint> object, based on the value
+passed to the constructor in the C<isa> parameter.
+
+=head2 $field->default()
+
+The default, as passed to the constructor, if any.
+
+=head2 $field->is_required()
+
+Returns a boolean indicating whether the field is required.
+
+=head2 $field->is_secure()
+
+Returns a boolean indicating whether the field contains sensitive data.
+
+=head2 $field->extractor()
+
+Returns the method used to extract the field's data from the user-submitted
+parameters. This defaults to L<_extract_field_value>, a method provided by
+L<Chloro::Role::Form>.
+
+=head2 $field->validator()
+
+Returns the method used to extract the field's data from the user-submitted
+parameters. This defaults to L<_errors_for_field_value>, a method provided by
+L<Chloro::Role::Form>.
+
+=head2 $field->generate_default( $params, $prefix )
+
+Given the user-submitted parameters and an optional prefix, this method
+returns a default value for the field. If the default is a subroutine
+reference, that reference will be called with the parameters passed to this
+method.
+
+=head2 $field->dump()
+
+Returns a data structure representing the field definition. This exists
+primarily for testing.
+
+=head1 ROLES
+
+This class consumes the L<Chloro::Role::FormComponent> role.
+
+=cut

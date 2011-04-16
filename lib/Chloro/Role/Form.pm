@@ -5,8 +5,7 @@ use Moose::Role;
 use namespace::autoclean;
 
 use Chloro::Error::Form;
-use Chloro::ErrorMessage::Invalid;
-use Chloro::ErrorMessage::Missing;
+use Chloro::ErrorMessage;
 use Chloro::Result::Field;
 use Chloro::Result::Group;
 use Chloro::ResultSet;
@@ -45,13 +44,15 @@ sub process {
         }
     }
 
-    my @form_errors = map {
-        Chloro::Error::Form->new(
-            error => ref $_
+    my @form_errors = map { Chloro::Error::Form->new( message => $_ ) }
+        map {
+        ref $_
             ? $_
-            : Chloro::ErrorMessage::Invalid->new( message => $_ )
+            : Chloro::ErrorMessage->new(
+            text     => $_,
+            category => 'invalid',
             )
-    } $self->_validate_form( $params, \%results );
+        } $self->_validate_form( $params, \%results );
 
     return $self->_make_resultset( $params, \%results, \@form_errors );
 }
@@ -83,7 +84,7 @@ sub _result_for_field {
         = $self->_validate_field( $field, $params, $prefix );
 
     @errors
-        = map { Chloro::Error::Field->new( field => $field, error => $_ ) }
+        = map { Chloro::Error::Field->new( field => $field, message => $_ ) }
         @errors;
 
     return Chloro::Result::Field->new(
@@ -121,33 +122,41 @@ sub _validate_field {
     my @errors;
     if ( $field->is_required() && _value_is_empty($value) ) {
         push @errors,
-            Chloro::ErrorMessage::Missing->new(
-            message => 'The ' . $field->human_name() . ' field is required.' );
+            Chloro::ErrorMessage->new(
+            text     => 'The ' . $field->human_name() . ' field is required.',
+            category => 'missing',
+            );
     }
     else {
-
         # The validate() method returns false on valid (bah)
         if ( $field->type()->validate($value) ) {
 
             # XXX - we are ignoring the Moose-returned message for now, because
             # it's not at all end user friendly.
             push @errors,
-                Chloro::ErrorMessage::Invalid->new( message => 'The '
+                Chloro::ErrorMessage->new(
+                text => 'The '
                     . $field->human_name()
-                    . ' field did not contain a valid value.' );
+                    . ' field did not contain a valid value.',
+                category => 'invalid',
+                );
         }
         elsif ( my $msg
             = $self->$validator( $value, $params, $prefix, $field ) ) {
 
-            push @errors,
-                Chloro::ErrorMessage::Invalid->new( message => $msg );
+            push @errors, ref $msg
+                ? $msg
+                : Chloro::ErrorMessage->new(
+                text     => $msg,
+                category => 'invalid',
+                );
         }
     }
 
     return ( $value, @errors );
 }
 
-sub extract_field_value {
+sub _extract_field_value {
     my $self   = shift;
     my $params = shift;
     my $prefix = shift;
@@ -158,7 +167,7 @@ sub extract_field_value {
     return $params->{$key};
 }
 
-sub errors_for_field_value {
+sub _errors_for_field_value {
     # my $self   = shift;
     # my $value  = shift;
     # my $params = shift;
@@ -173,7 +182,7 @@ sub _results_for_group {
     my $group  = shift;
     my $params = shift;
 
-    my $keys = $params->{ $group->repetition_field() };
+    my $keys = $params->{ $group->repetition_key() };
 
     return
         map { $self->_result_for_group_by_key( $group, $params, $_ ) }
@@ -206,7 +215,7 @@ sub _result_for_group_by_key {
     );
 }
 
-sub group_is_empty {
+sub _group_is_empty {
     my $self   = shift;
     my $params = shift;
     my $prefix = shift;
@@ -223,3 +232,71 @@ sub _value_is_empty {
 }
 
 1;
+
+# ABSTRACT: A role for form classes
+
+__END__
+
+=head1 SYNOPSIS
+
+    package MyApp::Form::Login;
+
+    # define fields
+
+    my $form = MyApp::Form::Login->new();
+    my $resultset = $form->process( params => $params );
+
+=head1 DESCRIPTION
+
+When you write a class or role which C<use>s L<Chloro>, your class or role
+will automatically consume this role.
+
+This role implements most of the logic related to process a user's form
+submission. You can provide custom versions of some of these methods to change
+how this processing is done.
+
+=head1 PUBLIC METHODS
+
+This role provides the following public methods:
+
+=head2 $form->fields()
+
+This returns the ungrouped L<Chloro::Field> objects for the form.
+
+=head2 $form->groups()
+
+This returns the L<Chloro::Group> objects for the form.
+
+=head2 $form->process( params => $params )
+
+This method takes a hash reference of user-submitted form data and processes
+it. The hash reference should contain field names (as found in the HTML form)
+as keys.
+
+=head1 PRIVATE METHODS
+
+This role also provides a number of private methods. Some are for Chloro's use
+only, but some of them are designed so that you can provide your own alternate
+implementation.
+
+=head2 $form->_resultset_class()
+
+This returns the name of the class that should be used for the form's
+resultset. This defaults to L<Chloro::ResultSet>, but you can provide your own
+class.
+
+If you provide a custom resultset class, you should extend
+L<Chloro::ResultSet>.
+
+=head2 $form->_validate_form( $params, $results_hash )
+
+This method will be called with two arguments. The first is the raw parameters
+passed to C<< $form->process() >>. The second is a hash reference where the
+keys are field and group names and the values are L<Chloro::Result::Field> and
+L<Chloro::Result::Group> objects.
+
+By default, this is a no-op method, but you can provide your own
+implementation to do whole form validation. See L<Chloro::Manual::Intro> for
+an example.
+
+=cut

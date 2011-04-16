@@ -3,7 +3,7 @@ package Chloro::Test::User;
 use Moose;
 use Chloro;
 
-use Chloro::ErrorMessage::Missing;
+use Chloro::ErrorMessage;
 use Chloro::Types qw( NonEmptyStr );
 use List::AllUtils qw( all );
 
@@ -57,7 +57,10 @@ sub _validate_username {
 
     return unless $params->{username} eq 'Special';
 
-    return Chloro::ErrorMessage::Missing->new( message => 'Special is no good.' );
+    return Chloro::ErrorMessage->new(
+        category => 'missing',
+        text     => 'Special is no good.'
+    );
 }
 
 __PACKAGE__->meta()->make_immutable;

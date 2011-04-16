@@ -11,7 +11,7 @@ field allows_mail => (
 );
 
 group address => (
-    repetition_field => 'address_id',
+    repetition_key => 'address_id',
     (
         field street1 => (
             isa      => Str,

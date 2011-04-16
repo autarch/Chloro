@@ -34,7 +34,7 @@ identifiers for new fields.
 Here's a group definition for our phone number group:
 
     group phone_number => (
-        repetition_field => 'phone_number_id',
+        repetition_key => 'phone_number_id',
         (
             field phone_number_type => (
                 isa      => 'Int',
@@ -118,7 +118,7 @@ The first argument are the parameters passed to the C<< $form->process() >>
 method.
 
 The second is the group's prefix, which is a combination of the group name and
-one of the values in the C<repetition_field>, something like "phone_number.42".
+one of the values in the C<repetition_key>, something like "phone_number.42".
 
 The third argument is the L<Chloro::Group> object for this group.
 
@@ -142,7 +142,7 @@ structure back like this:
     }
 
 No matter how many phone numbers are present, the C<phone_number_id> field
-(our C<repetition_field>) will always contain an array reference.
+(our C<repetition_key>) will always contain an array reference.
 
 It's also possible that a phone number id will not have any associated data
 under the C<phone_number> key, if the group was empty.

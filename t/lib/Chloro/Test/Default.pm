@@ -16,7 +16,7 @@ field bar => (
 );
 
 group baz => (
-    repetition_field => 'baz_id',
+    repetition_key => 'baz_id',
     (
         field x => (
             isa      => Int,

@@ -10,9 +10,9 @@ A form is defined as a unique class, so you might have C<MyApp::Form::Login>,
 C<MyApp::Form::User>, etc. To make a form class, just C<use Moose> and then
 C<use Chloro>.
 
-When you C<use Chloro>, your class is a form. A form class consumes the
-L<Chloro::Role::Form> role. Since you're still using Moose, you can inherit
-from other classes, define attributes, consumer other roles, etc.
+When you C<use Chloro>, your class is a form. A form class automatically
+consumes the L<Chloro::Role::Form> role. Since you're still using Moose, you
+can inherit from other classes, define attributes, consumer other roles, etc.
 
 You can also C<use Chloro> in a role, and then compose those form roles into
 form classes.
@@ -153,6 +153,9 @@ Note that the validator is called I<in addition> to validating the field's
 type. If the type validation fails, then the validator will not be called at
 all.
 
+If the validator returns nothing, the field is valid. If the field is invalid,
+you can either return a string or a L<Chloro::ErrorMessage> object.
+
 =back
 
 =head1 PROCESSING USER INPUT
@@ -200,9 +203,7 @@ If the resultset isn't valid you can retrieve the errors from the resultset:
 The errors are objects, and can be either L<Chloro::Error::Field> or
 L<Chloro::Error::Form> objects. A field error is associated with a specific
 field, while a form error is not. Both of these objects will have an error
-message object available from C<< $error->message() >>. The message will be
-either a L<Chloro::ErrorMessage::Invalid> or L<Chloro::ErrorMessage::Missing>
-object.
+message object available from C<< $error->message() >>.
 
 What you do with these error objects is up to you.
 
@@ -304,8 +305,7 @@ Generally, it's best to get the data from the result objects, since this is
 the result of running any custom extraction logic.
 
 The C<_validate_form()> object is expected to return a list of errors if there
-are any. These can either be strings or objects that do the
-L<Chloro::Role::ErrorMessage> role.
+are any. These can either be strings or L<Chloro::ErrorMessage> objects.
 
 In the example above, our C<_validate_form()> method checks several
 things. First, if both password fields are empty, we return false, because

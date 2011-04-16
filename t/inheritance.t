@@ -151,7 +151,7 @@ use Chloro::Types qw( Int Str );
     use Chloro::Types qw( Str );
 
     group parent => (
-        repetition_field => 'parent_id',
+        repetition_key => 'parent_id',
         (
             field name => (
                 isa => Str,
@@ -171,7 +171,7 @@ use Chloro::Types qw( Int Str );
     extends 'Parent4';
 
     group child => (
-        repetition_field => 'child_id',
+        repetition_key => 'child_id',
         (
             field name => (
                 isa => Str,
@@ -188,7 +188,7 @@ use Chloro::Types qw( Int Str );
     is_deeply(
         \%groups, {
             parent => {
-                repetition_field => 'parent_id',
+                repetition_key => 'parent_id',
                 fields           => {
                     name => {
                         type     => Str,
@@ -198,7 +198,7 @@ use Chloro::Types qw( Int Str );
                 },
             },
             child => {
-                repetition_field => 'child_id',
+                repetition_key => 'child_id',
                 fields           => {
                     name => {
                         type     => Str,

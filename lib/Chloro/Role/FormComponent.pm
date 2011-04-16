@@ -30,3 +30,15 @@ sub _build_human_name {
 }
 
 1;
+
+# ABSTRACT: A role for named things which are part of a form (fields and groups)
+
+__END__
+
+=head1 DESCRIPTION
+
+This role defines two attributes which are shared between fields and groups,
+C<name> and C<human_name>.
+
+=cut
+

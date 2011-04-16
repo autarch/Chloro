@@ -106,11 +106,12 @@ my $form = Chloro::Test::Login->new();
 
     is_deeply(
         [
-            map { ref $_->error(), $_->error()->message() }
+            map { $_->message()->category, $_->message()->text() }
                 $pw_result->errors()
         ],
         [
-            'Chloro::ErrorMessage::Missing', 'The password field is required.'
+            'missing',
+            'The password field is required.'
         ],
         'errors for password result'
     );
@@ -133,11 +134,12 @@ my $form = Chloro::Test::Login->new();
 
     is_deeply(
         [
-            map { ref $_->error(), $_->error()->message() }
+            map { $_->message()->category, $_->message()->text() }
                 $pw_result->errors()
         ],
         [
-            'Chloro::ErrorMessage::Missing', 'The password field is required.'
+            'missing',
+            'The password field is required.'
         ],
         'errors for password result'
     );
@@ -160,11 +162,12 @@ my $form = Chloro::Test::Login->new();
 
     is_deeply(
         [
-            map { ref $_->error(), $_->error()->message() }
+            map { $_->message()->category, $_->message()->text() }
                 $pw_result->errors()
         ],
         [
-            'Chloro::ErrorMessage::Missing', 'The password field is required.'
+            'missing',
+            'The password field is required.'
         ],
         'errors for password result'
     );
@@ -187,11 +190,11 @@ my $form = Chloro::Test::Login->new();
 
     is_deeply(
         [
-            map { ref $_->error(), $_->error()->message() }
+            map { $_->message()->category, $_->message()->text() }
                 $pw_result->errors(),
         ],
         [
-            'Chloro::ErrorMessage::Invalid',
+            'invalid',
             'The password field did not contain a valid value.'
         ],
         'errors for password result'

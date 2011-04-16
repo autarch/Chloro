@@ -31,8 +31,8 @@ my $form = Chloro::Test::Address->new();
     is_deeply(
         \%groups, {
             address => {
-                repetition_field => 'address_id',
-                fields           => {
+                repetition_key => 'address_id',
+                fields         => {
                     street1 => {
                         type     => Str,
                         required => 1,
@@ -234,19 +234,19 @@ my $form = Chloro::Test::Address->new();
         _error_breakdown( \%errors ), {
             allows_mail => [
                 [
-                    'Chloro::ErrorMessage::Invalid',
+                    'invalid',
                     'The allows mail field did not contain a valid value.'
                 ]
             ],
             'address.x.city' => [
                 [
-                    'Chloro::ErrorMessage::Missing',
+                    'missing',
                     'The city field is required.'
                 ]
             ],
             'address.x.state' => [
                 [
-                    'Chloro::ErrorMessage::Missing',
+                    'missing',
                     'The state field is required.'
                 ]
             ],
@@ -263,7 +263,7 @@ sub _error_breakdown {
     my %break;
 
     for my $key ( keys %{$errors} ) {
-        $break{$key} = [ map { [ ref $_->error(), $_->error()->message() ] }
+        $break{$key} = [ map { [ $_->message()->category(), $_->message()->text() ] }
                 @{ $errors->{$key} } ];
     }
 

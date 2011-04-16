@@ -16,7 +16,7 @@ use Chloro::Types qw( Int Str );
     field foo => ( isa => Str );
 
     group bar => (
-        repetition_field => 'bar_id',
+        repetition_key => 'bar_id',
         (
             field size => (
                 isa      => Int,
@@ -38,7 +38,7 @@ use Chloro::Types qw( Int Str );
     field baz => ( isa => Str );
 
     group buz => (
-        repetition_field => 'buz_id',
+        repetition_key => 'buz_id',
         ( field x => ( isa => Int ) ),
         ( field y => ( isa => Str ) ),
     );
@@ -73,7 +73,7 @@ use Chloro::Types qw( Int Str );
     is_deeply(
         \%groups, {
             bar => {
-                repetition_field => 'bar_id',
+                repetition_key => 'bar_id',
                 fields           => {
                     size => {
                         type     => Int,
@@ -126,7 +126,7 @@ use Chloro::Types qw( Int Str );
     is_deeply(
         \%groups, {
             bar => {
-                repetition_field => 'bar_id',
+                repetition_key => 'bar_id',
                 fields           => {
                     size => {
                         type     => Int,
@@ -141,7 +141,7 @@ use Chloro::Types qw( Int Str );
                 },
             },
             buz => {
-                repetition_field => 'buz_id',
+                repetition_key => 'buz_id',
                 fields           => {
                     x => {
                         type     => Int,
@@ -195,7 +195,7 @@ use Chloro::Types qw( Int Str );
     is_deeply(
         \%groups, {
             bar => {
-                repetition_field => 'bar_id',
+                repetition_key => 'bar_id',
                 fields           => {
                     size => {
                         type     => Int,
@@ -210,7 +210,7 @@ use Chloro::Types qw( Int Str );
                 },
             },
             buz => {
-                repetition_field => 'buz_id',
+                repetition_key => 'buz_id',
                 fields           => {
                     x => {
                         type     => Int,

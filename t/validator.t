@@ -51,11 +51,11 @@ my $form = Chloro::Test::Validator->new();
 
     is_deeply(
         [
-            ref $errors{max}->[0]->error(),
-            $errors{max}->[0]->error()->message(),
+            $errors{max}->[0]->message()->category(),
+            $errors{max}->[0]->message()->text(),
         ],
         [
-            'Chloro::ErrorMessage::Invalid',
+            'invalid',
             'The max value must be greater than the min value.'
         ],
         'got expected error type and message'

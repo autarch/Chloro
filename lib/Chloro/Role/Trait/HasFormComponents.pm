@@ -77,3 +77,13 @@ sub _make_field {
 }
 
 1;
+
+# ABSTRACT: A metaclass trait for classes and roles which use Chloro
+
+__END__
+
+=head1 DESCRIPTION
+
+This trait adds meta-information to classes and traits which C<use Chloro>.
+
+=cut

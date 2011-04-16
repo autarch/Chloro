@@ -19,3 +19,14 @@ has _results => (
 );
 
 1;
+
+# ABSTRACT: An interface-only for resultset classes
+
+__END__
+
+=head1 DESCRIPTION
+
+This role defines an interface for all resultsets, and is shared by the
+L<Chloro::ResultSet> and L<Chloro::Result::Group> classes.
+
+=cut

@@ -260,8 +260,8 @@ method to your form class:
 
     package MyApp::Form::User;
 
-    use Chloro;
     use Moose;
+    use Chloro;
 
     use List::AllUtils qw( any );
 

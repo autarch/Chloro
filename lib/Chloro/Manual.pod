@@ -1,4 +1,4 @@
-package Chloro::Manual::Groups;
+package Chloro::Manual;
 
 # ABSTRACT: Learn how to use Chloro
 

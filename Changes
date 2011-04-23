@@ -1,6 +1,8 @@
 {{$NEXT}}
 
-- Fix an error tha prevented some of the docs from being indexed.
+0.04     2011-04-17
+
+- Fix an error that prevented some of the docs from being indexed.
 
 
 0.03     2011-04-17

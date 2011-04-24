@@ -6,7 +6,6 @@ use MooseX::StrictConstructor;
 use namespace::autoclean;
 
 use Chloro::Field;
-use Chloro::Types qw( NonEmptyStr );
 
 with 'Chloro::Role::Error';
 

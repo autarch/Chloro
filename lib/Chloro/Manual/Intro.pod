@@ -133,6 +133,13 @@ can override this to implement a more complex extraction strategy. For
 example, you might extract a date from three separate field (year, month,
 day).
 
+The extractor is expected to return a two element list. The first should be
+the name of the field in the form, the second is the value.
+
+If the field does not have a correspondence to any one field you can return
+C<undef> for the name. If you provide a name, it will be passed to the
+L<Chloro::Result::Field> object as the C<name_in_form> parameter.
+
 =item * validator
 
 This is a subroutine reference that defines how the field's value is

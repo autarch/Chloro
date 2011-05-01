@@ -189,6 +189,9 @@ false.
 This is an optional method I<on the field's form> that will be used to extract
 this field's value.
 
+The extractor is expected to return a two element list. The first should be
+the name of the field in the form, the second is the value.
+
 =item * validator
 
 This is an optional method I<on the field's form> that will be used to

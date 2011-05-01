@@ -14,6 +14,7 @@ has _fields => (
     handles  => {
         _add_field   => 'STORE',
         _has_field   => 'EXISTS',
+        get_field    => 'FETCH',
         local_fields => 'Values',
     },
 );

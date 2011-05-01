@@ -5,7 +5,7 @@ use MooseX::StrictConstructor;
 
 use namespace::autoclean;
 
-use Chloro::Types qw( ArrayRef Item );
+use Chloro::Types qw( ArrayRef Item NonEmptyStr );
 
 with 'Chloro::Role::Result';
 
@@ -15,9 +15,16 @@ has _errors => (
     init_arg => 'errors',
     required => 1,
     handles  => {
-        errors   => 'elements',
-        is_valid => 'is_empty',
+        errors    => 'elements',
+        is_valid  => 'is_empty',
+        add_error => 'push',
     },
+);
+
+has name_in_form => (
+    is        => 'ro',
+    isa       => NonEmptyStr,
+    predicate => 'has_name_in_form',
 );
 
 has field => (

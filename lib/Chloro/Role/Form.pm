@@ -80,15 +80,19 @@ sub _result_for_field {
     my $params = shift;
     my $prefix = shift;
 
-    my ( $value, @errors )
+    my ( $name, $value, @errors )
         = $self->_validate_field( $field, $params, $prefix );
 
     @errors
         = map { Chloro::Error::Field->new( field => $field, message => $_ ) }
         @errors;
 
+    my %result_p = ( field => $field );
+    $result_p{name_in_form} = $name
+        if defined $name;
+
     return Chloro::Result::Field->new(
-        field  => $field,
+        %result_p,
         errors => \@errors,
         ( defined $value ? ( value => $value ) : () ),
     );
@@ -101,7 +105,7 @@ sub _validate_field {
     my $prefix = shift;
 
     my $extractor = $field->extractor();
-    my $value = $self->$extractor( $params, $prefix, $field );
+    my ( $name, $value ) = $self->$extractor( $params, $prefix, $field );
 
     $value = $field->generate_default( $params, $prefix )
         if !defined $value && $field->has_default();
@@ -153,7 +157,7 @@ sub _validate_field {
         }
     }
 
-    return ( $value, @errors );
+    return ( $name, $value, @errors );
 }
 
 sub _extract_field_value {
@@ -164,7 +168,7 @@ sub _extract_field_value {
 
     my $key = join q{.}, grep {defined} $prefix, $field->name();
 
-    return $params->{$key};
+    return ( $key, $params->{$key} );
 }
 
 sub _errors_for_field_value {

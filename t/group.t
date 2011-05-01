@@ -107,6 +107,21 @@ my $form = Chloro::Test::Address->new();
         },
         'results_as_hash returns expected values'
     );
+
+    for my $group_result ( grep { $_->isa('Chloro::Result::Group') }
+        $set->_result_values() ) {
+
+        my $prefix = $group_result->prefix();
+
+        for my $field_result ( $group_result->_result_values() ) {
+            my $expect = $prefix . q{.} . $field_result->field()->name();
+            is(
+                $field_result->name_in_form(),
+                $expect,
+                "got expected name_in_form for group result field ($expect)"
+            );
+        }
+    }
 }
 
 {

@@ -99,6 +99,12 @@ my $form = Chloro::Test::Login->new();
 
     my $pw_result = $set->result_for('password');
 
+    is(
+        $pw_result->name_in_form(),
+        'password',
+        'name_in_form returns expected value'
+    );
+
     ok(
        !$pw_result->is_valid(),
         'result for password is not valid'

@@ -18,6 +18,7 @@ has _form_errors => (
     required => 1,
     handles  => {
         form_errors      => 'elements',
+        add_form_error   => 'push',
         _has_form_errors => 'count',
     },
 );
@@ -80,6 +81,30 @@ sub _results_hash {
             next if $skip_secure && $result->field()->is_secure();
 
             %hash = ( %hash, $result->key_value_pairs() );
+        }
+    }
+
+    return \%hash;
+}
+
+sub secure_raw_params {
+    my $self = shift;
+
+    my %hash = %{ $self->_params() };
+
+    for my $result ( $self->_result_values() ) {
+        if ( $result->can('group') ) {
+            for my $field_result ( grep { $_->field()->is_secure() }
+                $result->_result_values() ) {
+
+                delete $hash{ $result->group()->prefix() . q{.}
+                        . $field_result->field()->name() };
+            }
+        }
+        else {
+            next unless $result->field()->is_secure();
+
+            delete $hash{ $result->field()->name() };
         }
     }
 
@@ -200,9 +225,22 @@ field marked as secure is omitted. This is useful if you need to pass the form
 data in a query string or session, and you don't want to include things like
 credit card numbers or passwords.
 
+=head2 $resultset->secure_raw_params()
+
+Returns a hash reference of the original parameters passed to C<<
+$form->process() >> with any fields marked secure removed.
+
+Note that if the keys in the original params do not match the field names
+(because you used a custom extractor), then those keys will still be in the
+returned hash reference.
+
 =head2 $resultset->form_errors()
 
 Returns a list of L<Chloro::Error::Form> objects. This list may be empty.
+
+=head2 $resultset->add_form_error()
+
+Adds a L<Chloro::Error::Form> object to the resultset.
 
 =head2 $resultset->field_errors()
 

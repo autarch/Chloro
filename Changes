@@ -1,5 +1,20 @@
 {{$NEXT}}
 
+[API CHANGE]
+
+- A custom extractor is now expected to return both the name of the field as
+  it was used in the form and the value of the field.
+
+[NEW FEATURES]
+
+- Added several methods:
+  Chloro::Group->get_field(),
+  Chloro::ResultSet->add_form_error()
+  Chloro::ResultSet->secure_raw_params(),
+  Chloro::Result::Field->name_in_form()
+  Chloro::Result::Field->add_error()
+
+
 0.04     2011-04-17
 
 - Fix an error that prevented some of the docs from being indexed.

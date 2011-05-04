@@ -21,10 +21,10 @@ has _errors => (
     },
 );
 
-has name_in_form => (
-    is        => 'ro',
-    isa       => NonEmptyStr,
-    predicate => 'has_name_in_form',
+has param_names => (
+    is       => 'ro',
+    isa      => ArrayRef[NonEmptyStr],
+    required => 1,
 );
 
 has field => (
@@ -38,6 +38,21 @@ has value => (
     isa       => Item,
     predicate => 'has_value',
 );
+
+sub BUILD {
+    my $self = shift;
+
+    $_->_set_result($self) for $self->errors();
+
+    return;
+}
+
+after add_error => sub {
+    my $self = shift;
+    my $error = shift;
+
+    $error->_set_result($self);
+};
 
 sub key_value_pairs {
     my $self = shift;
@@ -102,6 +117,13 @@ Returns true if there are no errors associated with this result.
 =head2 $result->field()
 
 Returns the L<Chloro::Field> object for this result.
+
+=head2 $result->param_names()
+
+Returns an array reference of the parameter keys associated with this
+field. The names are returned by the extractor method. For most fields, this
+will always be a one value arrayref, but it could be empty or have multiple
+names with a custom extractor.
 
 =head2 $result->value()
 

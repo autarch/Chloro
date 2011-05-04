@@ -2,8 +2,11 @@
 
 [API CHANGE]
 
-- A custom extractor is now expected to return both the name of the field as
-  it was used in the form and the value of the field.
+- A custom extractor is now expected to return both the value of the field and
+  the parameter name(s) associated with the field in the form.
+
+- An repetition_key value for an empty group no longer appears in the result
+  value for that the repetition_key's field.
 
 [NEW FEATURES]
 
@@ -11,8 +14,9 @@
   Chloro::Group->get_field(),
   Chloro::ResultSet->add_form_error()
   Chloro::ResultSet->secure_raw_params(),
-  Chloro::Result::Field->name_in_form()
+  Chloro::Result::Field->param_names()
   Chloro::Result::Field->add_error()
+  Chloro::Error::Field->result()
 
 
 0.04     2011-04-17

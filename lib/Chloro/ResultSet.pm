@@ -71,11 +71,18 @@ sub _results_hash {
             $hash{ $result->group()->name() }{ $result->key() }
                 = { $result->key_value_pairs($skip_secure) };
 
-            my $rep_vals
-                = $self->_params()->{ $result->group()->repetition_key() };
+            my $group   = $result->group();
+            my $rep_key = $group->repetition_key();
 
-            $hash{ $result->group()->repetition_key() }
-                = ref $rep_vals ? $rep_vals : [$rep_vals];
+            unless ( exists $hash{$rep_key} ) {
+                my $rep_vals = $self->_params()->{$rep_key};
+
+                my @vals
+                    = grep { $self->result_for( $group->name() . q{.} . $_ ) }
+                    ref $rep_vals ? @{$rep_vals} : $rep_vals;
+
+                $hash{$rep_key} = \@vals;
+            }
         }
         else {
             next if $skip_secure && $result->field()->is_secure();

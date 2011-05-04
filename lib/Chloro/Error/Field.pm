@@ -15,6 +15,13 @@ has field => (
     required => 1,
 );
 
+has result => (
+    is       => 'rw',
+    writer   => '_set_result',
+    isa      => 'Chloro::Result::Field',
+    weak_ref => 1,
+);
+
 has message => (
     is       => 'ro',
     isa      => 'Chloro::ErrorMessage',

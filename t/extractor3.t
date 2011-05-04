@@ -22,9 +22,10 @@ my $form = Chloro::Test::NoNameExtractor->new();
         'foo is extracted from from form'
     );
 
-    ok(
-        !$set->result_for('foo')->has_name_in_form(),
-        'foo field has no name in form'
+    is_deeply(
+        $set->result_for('foo')->param_names(),
+        [],
+        'foo field has no param_names'
     );
 }
 

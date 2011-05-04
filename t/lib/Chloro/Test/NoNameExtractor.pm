@@ -17,7 +17,7 @@ sub _extract_foo {
     my $prefix = shift;
     my $field  = shift;
 
-    return ( undef, $params->{foo} );
+    return $params->{foo};
 }
 
 __PACKAGE__->meta()->make_immutable;

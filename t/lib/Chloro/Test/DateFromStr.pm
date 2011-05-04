@@ -26,10 +26,10 @@ sub _extract_date {
     }
 
     return (
-        'date',
         DateTime->new(
             map { $_ => $params->{ $keys{$_} } } qw( year month day )
-        )
+        ),
+        ( 'year', 'month', 'day' ),
     );
 }
 

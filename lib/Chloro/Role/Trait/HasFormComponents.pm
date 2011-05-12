@@ -13,7 +13,7 @@ has _fields => (
     default  => sub { Tie::IxHash->new() },
     handles  => {
         _add_field   => 'STORE',
-        _has_field   => 'EXISTS',
+        has_field    => 'EXISTS',
         get_field    => 'FETCH',
         local_fields => 'Values',
     },
@@ -25,7 +25,7 @@ has _groups => (
     default  => sub { Tie::IxHash->new() },
     handles  => {
         _add_group   => 'STORE',
-        _has_group   => 'EXISTS',
+        has_group   => 'EXISTS',
         local_groups => 'Values',
     },
 );
@@ -34,12 +34,12 @@ sub add_field {
     my $self  = shift;
     my $field = shift;
 
-    if ( $self->_has_field( $field->name() ) ) {
+    if ( $self->has_field( $field->name() ) ) {
         my $name = $field->name();
         croak "Cannot add two fields with the same name ($name)";
     }
 
-    if ( $self->_has_group( $field->name() ) ) {
+    if ( $self->has_group( $field->name() ) ) {
         my $name = $field->name();
         croak "Cannot share a name between a field and a group ($name)";
     }
@@ -53,12 +53,12 @@ sub add_group {
     my $self  = shift;
     my $group = shift;
 
-    if ( $self->_has_group( $group->name() ) ) {
+    if ( $self->has_group( $group->name() ) ) {
         my $name = $group->name();
         croak "Cannot add two groups with the same name ($name)";
     }
 
-    if ( $self->_has_field( $group->name() ) ) {
+    if ( $self->has_field( $group->name() ) ) {
         my $name = $group->name();
         croak "Cannot share a name between a field and a group ($name)";
     }

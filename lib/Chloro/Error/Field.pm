@@ -58,6 +58,11 @@ This class has the following methods:
 
 Returns the L<Chloro::Field> object associated with this error.
 
+=head2 $error->result()
+
+Returns the L<Chloro::Result::Field> object associated with this error. This
+is a weak reference, so it could return C<undef>.
+
 =head2 $error->message()
 
 Returns a L<Chloro::ErrorMessage> object.

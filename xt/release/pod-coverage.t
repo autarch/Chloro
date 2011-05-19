@@ -6,7 +6,8 @@ use warnings;
 use Test::More;
 
 use Test::Requires {
-    'Test::Pod::Coverage' => '1.04',
+    'Test::Pod::Coverage'  => '1.04',
+    'Pod::Coverage::Moose' => '0.02',
 };
 
 my %skip = map { $_ => 1 } qw(
@@ -24,6 +25,7 @@ plan tests => scalar @modules;
 my %trustme = (
     'Chloro'                                 => qr/.+/,
     'Chloro::Field'                          => qr/^STORABLE_.+/,
+    'Chloro::Result::Field'                  => ['BUILD'],
     'Chloro::Role::Trait::HasFormComponents' => qr/.+/,
 );
 
@@ -41,7 +43,10 @@ for my $module ( sort @modules ) {
     }
 
     pod_coverage_ok(
-        $module, { trustme => $trustme },
+        $module, {
+            coverage_class => 'Pod::Coverage::Moose',
+            trustme        => $trustme,
+        },
         "Pod coverage for $module"
     );
 }

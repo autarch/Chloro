@@ -12,7 +12,7 @@ C<use Chloro>.
 
 When you C<use Chloro>, your class is a form. A form class automatically
 consumes the L<Chloro::Role::Form> role. Since you're still using Moose, you
-can inherit from other classes, define attributes, consumer other roles, etc.
+can inherit from other classes, define attributes, consumes other roles, etc.
 
 You can also C<use Chloro> in a role, and then compose those form roles into
 form classes.

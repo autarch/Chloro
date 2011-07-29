@@ -106,7 +106,7 @@ submission is not valid.
 =item * secure
 
 If a field is marked as secure, then it is excluded from the data returned by
-the L<Chloro::ResultSet> class's C<secure_results()> method.
+the L<Chloro::ResultSet> class's C<secure_results_as_hash()> method.
 
 The primary use of this is to avoid putting sensitive data like passwords or
 credit cards numbers in a session or query parameter.

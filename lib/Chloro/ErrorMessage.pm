@@ -46,4 +46,8 @@ This is a string that tells what kind of error message this is. By default,
 Chloro only uses "invalid" and "missing", but there's nothing preventing you
 from using other categories in your code.
 
+=head2 $error->text()
+
+The text of the error message.
+
 =cut

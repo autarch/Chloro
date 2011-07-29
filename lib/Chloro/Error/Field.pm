@@ -43,7 +43,7 @@ __END__
     for my $message ( @{$errors} ) {
         print $message->field()->name();
         print ': ';
-        print $message->error()->message();
+        print $message->error()->text();
     }
 
 =head1 DESCRIPTION

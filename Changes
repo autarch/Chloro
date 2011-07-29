@@ -1,5 +1,12 @@
 {{$NEXT}}
 
+[BUG FIXES]
+
+- Fixed a bunch of doc errors, including the fact the
+  Chloro::ErrorMessage->text() method wasn't documented. These errors were all
+  reported by Mark Stratmen.
+
+
 0.05     2011-05-19
 
 [API CHANGE]

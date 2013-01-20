@@ -300,7 +300,7 @@ method to your form class:
 
         return unless any { defined && length } $pw1, $pw2;
 
-        return if ( $pw1 // q{} ) eq ( $pw1 // q{} );
+        return if ( $pw1 // q{} ) eq ( $pw2 // q{} );
 
         return 'The two passwords you provided did not match.';
     }

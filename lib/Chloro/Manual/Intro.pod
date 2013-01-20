@@ -23,6 +23,7 @@ well as some other optional parameters.
     package MyApp::Form::User;
 
     use Moose;
+    use MooseX::Types::Email qw/EmailAddress/;
     use Chloro;
 
     field username => (
@@ -31,7 +32,7 @@ well as some other optional parameters.
     );
 
     field email_address => (
-        isa      => 'EmailAddress',
+        isa      => EmailAddress,
         required => 1,
     );
 
@@ -269,12 +270,13 @@ method to your form class:
     package MyApp::Form::User;
 
     use Moose;
+    use MooseX::Types::Email qw/EmailAddress/;
     use Chloro;
 
     use List::AllUtils qw( any );
 
     field email_address => (
-        isa      => 'EmailAddress',
+        isa      => EmailAddress,
         required => 1,
     );
 

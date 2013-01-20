@@ -40,10 +40,10 @@ __END__
 
     my $errors = $resultset->result_for('field')->errors();
 
-    for my $message ( @{$errors} ) {
-        print $message->field()->name();
+    for my $error ( @{$errors} ) {
+        print $error->field()->name();
         print ': ';
-        print $message->error()->text();
+        print $error->message()->text();
     }
 
 =head1 DESCRIPTION

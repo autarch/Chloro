@@ -180,9 +180,9 @@ input. If you're using Catalyst you could write this:
     my $resultset = $form->process( params => $c->request()->params() );
 
 The first thing you should do with the resultset is check whether it is
-valid. Valid means that there I<all> of the fields passed their required,
-type, validator checks. If the form defined any form-level validations, these
-must also pass for the resultset to be valid.
+valid. Valid means that I<all> of the fields passed their required, type,
+validator checks. If the form defined any form-level validations, these must
+also pass for the resultset to be valid.
 
     if ( $resultset->is_valid() ) {
         ...

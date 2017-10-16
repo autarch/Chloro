@@ -7,7 +7,7 @@ use lib 't/lib';
 
 use Chloro::Test::Login;
 use Chloro::Types qw( Bool Str );
-use List::MoreUtils qw( all );
+use List::AllUtils qw( all );
 
 my $form = Chloro::Test::Login->new();
 

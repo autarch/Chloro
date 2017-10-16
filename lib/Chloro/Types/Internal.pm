@@ -2,6 +2,9 @@ package Chloro::Types::Internal;
 
 use strict;
 use warnings;
+use namespace::autoclean;
+
+our $VERSION = '0.07';
 
 use MooseX::Types -declare => [
     qw(

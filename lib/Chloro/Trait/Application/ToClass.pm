@@ -1,8 +1,12 @@
 package Chloro::Trait::Application::ToClass;
 
-use Moose::Role;
-
+use strict;
+use warnings;
 use namespace::autoclean;
+
+our $VERSION = '0.07';
+
+use Moose::Role;
 
 use Moose::Util qw( does_role );
 
@@ -33,6 +37,7 @@ around apply => sub {
     $self->$orig( $role, $class );
 };
 
+## no critic (Subroutines::ProhibitUnusedPrivateSubroutines)
 sub _apply_form_components {
     my $self  = shift;
     my $role  = shift;
@@ -50,6 +55,7 @@ sub _apply_form_components {
         $class->add_group($group);
     }
 }
+## use critic
 
 1;
 

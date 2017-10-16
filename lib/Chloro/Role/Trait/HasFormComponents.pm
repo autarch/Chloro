@@ -1,8 +1,12 @@
 package Chloro::Role::Trait::HasFormComponents;
 
-use Moose::Role;
-
+use strict;
+use warnings;
 use namespace::autoclean;
+
+our $VERSION = '0.07';
+
+use Moose::Role;
 
 use Carp qw( croak );
 use Tie::IxHash;
@@ -25,7 +29,7 @@ has _groups => (
     default  => sub { Tie::IxHash->new() },
     handles  => {
         _add_group   => 'STORE',
-        has_group   => 'EXISTS',
+        has_group    => 'EXISTS',
         local_groups => 'Values',
     },
 );
@@ -68,6 +72,7 @@ sub add_group {
     return;
 }
 
+## no critic (Subroutines::ProhibitUnusedPrivateSubroutines)
 sub _make_field {
     my $self = shift;
 
@@ -76,6 +81,7 @@ sub _make_field {
         @_,
     );
 }
+## use critic
 
 1;
 

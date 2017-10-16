@@ -2,6 +2,9 @@ package Chloro;
 
 use strict;
 use warnings;
+use namespace::autoclean;
+
+our $VERSION = '0.07';
 
 use Chloro::Field;
 use Chloro::Group;

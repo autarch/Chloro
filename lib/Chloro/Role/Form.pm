@@ -1,8 +1,12 @@
 package Chloro::Role::Form;
 
-use Moose::Role;
-
+use strict;
+use warnings;
 use namespace::autoclean;
+
+our $VERSION = '0.07';
+
+use Moose::Role;
 
 use Chloro::Error::Form;
 use Chloro::ErrorMessage;
@@ -97,7 +101,7 @@ sub _result_for_field {
         errors      => [
             map {
                 Chloro::Error::Field->new( field => $field, message => $_ )
-                } @{$errors}
+            } @{$errors}
         ],
         ( defined $value ? ( value => $value ) : () ),
     );
@@ -121,7 +125,7 @@ sub _validate_field {
         if ( $field->type()->is_a_type_of('Bool') ) {
             $value = 0;
         }
-        elsif ( ! $field->is_required() ) {
+        elsif ( !$field->is_required() ) {
             return;
         }
     }
@@ -144,7 +148,7 @@ sub _validate_field {
             # it's not at all end user friendly.
             push @errors,
                 Chloro::ErrorMessage->new(
-                text => 'The '
+                      text => 'The '
                     . $field->human_name()
                     . ' field did not contain a valid value.',
                 category => 'invalid',
@@ -165,6 +169,7 @@ sub _validate_field {
     return ( $value, \@names, \@errors );
 }
 
+## no critic (Subroutines::ProhibitUnusedPrivateSubroutines)
 sub _extract_field_value {
     my $self   = shift;
     my $params = shift;
@@ -177,6 +182,7 @@ sub _extract_field_value {
 }
 
 sub _errors_for_field_value {
+
     # my $self   = shift;
     # my $value  = shift;
     # my $params = shift;
@@ -185,6 +191,7 @@ sub _errors_for_field_value {
 
     return;
 }
+## use critic
 
 sub _results_for_group {
     my $self   = shift;
@@ -193,10 +200,8 @@ sub _results_for_group {
 
     my $keys = $params->{ $group->repetition_key() };
 
-    return
-        map { $self->_result_for_group_by_key( $group, $params, $_ ) }
-        grep { defined && length }
-        ref $keys ? @{$keys} : $keys;
+    return map { $self->_result_for_group_by_key( $group, $params, $_ ) }
+        grep { defined && length } ref $keys ? @{$keys} : $keys;
 }
 
 sub _result_for_group_by_key {
@@ -224,6 +229,7 @@ sub _result_for_group_by_key {
     );
 }
 
+## no critic (Subroutines::ProhibitUnusedPrivateSubroutines)
 sub _group_is_empty {
     my $self   = shift;
     my $params = shift;
@@ -233,6 +239,7 @@ sub _group_is_empty {
     return all { !( defined $params->{$_} && length $params->{$_} ) }
     map { join q{.}, $prefix, $_->name() } $group->fields();
 }
+## use critic
 
 sub _validate_form { }
 

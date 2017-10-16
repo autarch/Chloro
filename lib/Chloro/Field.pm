@@ -1,9 +1,13 @@
 package Chloro::Field;
 
+use strict;
+use warnings;
+use namespace::autoclean;
+
+our $VERSION = '0.07';
+
 use Moose;
 use MooseX::StrictConstructor;
-
-use namespace::autoclean;
 
 use Chloro::Types qw( Bool CodeRef NonEmptySimpleStr Str Value );
 use Moose::Util::TypeConstraints;
@@ -98,12 +102,14 @@ sub STORABLE_thaw {
     %{$self} = %{$obj};
 
     $self->{type}
-        = Moose::Util::TypeConstraints::find_or_create_type_constraint( ${$type} );
+        = Moose::Util::TypeConstraints::find_or_create_type_constraint(
+        ${$type} );
 
     return;
 }
 
 # This exists mostly to make testing easier
+## no critic (Subroutines::ProhibitBuiltinHomonyms)
 sub dump {
     my $self = shift;
 
@@ -114,6 +120,7 @@ sub dump {
         ( $self->has_default() ? ( default => $self->default() ) : () ),
     );
 }
+## use critic
 
 __PACKAGE__->meta()->make_immutable();
 

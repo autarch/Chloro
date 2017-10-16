@@ -1,9 +1,13 @@
 package Chloro::Group;
 
+use strict;
+use warnings;
+use namespace::autoclean;
+
+our $VERSION = '0.07';
+
 use Moose;
 use MooseX::StrictConstructor;
-
-use namespace::autoclean;
 
 use Chloro::Types qw( CodeRef HashOfFields NonEmptyStr NonEmptySimpleStr );
 
@@ -33,6 +37,7 @@ has is_empty_checker => (
     default => '_group_is_empty',
 );
 
+## no critic (Subroutines::ProhibitBuiltinHomonyms)
 sub dump {
     my $self = shift;
 
@@ -41,6 +46,7 @@ sub dump {
         fields => { map { $_->name() => { $_->dump() } } $self->fields() },
     );
 }
+## use critic
 
 __PACKAGE__->meta()->make_immutable();
 

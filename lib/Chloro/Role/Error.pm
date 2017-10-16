@@ -1,8 +1,12 @@
 package Chloro::Role::Error;
 
-use Moose::Role;
-
+use strict;
+use warnings;
 use namespace::autoclean;
+
+our $VERSION = '0.07';
+
+use Moose::Role;
 
 1;
 

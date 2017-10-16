@@ -1,8 +1,12 @@
 package Chloro::Role::Result;
 
-use Moose::Role;
-
+use strict;
+use warnings;
 use namespace::autoclean;
+
+our $VERSION = '0.07';
+
+use Moose::Role;
 
 requires 'key_value_pairs';
 

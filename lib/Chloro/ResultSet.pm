@@ -1,9 +1,13 @@
 package Chloro::ResultSet;
 
+use strict;
+use warnings;
+use namespace::autoclean;
+
+our $VERSION = '0.07';
+
 use Moose;
 use MooseX::StrictConstructor;
-
-use namespace::autoclean;
 
 use Chloro::Error::Form;
 use Chloro::Types qw( ArrayRef Bool HashRef );
@@ -43,7 +47,7 @@ sub _build_is_valid {
 
     return 0 if $self->_has_form_errors();
 
-    return 0 if any { ! $_->is_valid() } $self->_result_values();
+    return 0 if any { !$_->is_valid() } $self->_result_values();
 
     return 1;
 }

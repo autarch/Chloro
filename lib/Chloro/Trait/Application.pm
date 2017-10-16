@@ -1,8 +1,12 @@
 package Chloro::Trait::Application;
 
-use Moose::Role;
-
+use strict;
+use warnings;
 use namespace::autoclean;
+
+our $VERSION = '0.07';
+
+use Moose::Role;
 
 after apply_attributes => sub {
     shift->_apply_form_components(@_);

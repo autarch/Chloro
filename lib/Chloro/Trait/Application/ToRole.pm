@@ -1,4 +1,11 @@
+## no critic (Moose::RequireMakeImmutable)
 package Chloro::Trait::Application::ToRole;
+
+use strict;
+use warnings;
+use namespace::autoclean;
+
+our $VERSION = '0.07';
 
 use Moose::Role;
 
@@ -19,8 +26,7 @@ around apply => sub {
                 role => ['Chloro::Trait::Role'],
                 application_to_class =>
                     ['Chloro::Trait::Application::ToClass'],
-                application_to_role =>
-                    ['Chloro::Trait::Application::ToRole'],
+                application_to_role => ['Chloro::Trait::Application::ToRole'],
             },
         );
     }
@@ -28,6 +34,7 @@ around apply => sub {
     $self->$orig( $role1, $role2 );
 };
 
+## no critic (Subroutines::ProhibitUnusedPrivateSubroutines)
 sub _apply_form_components {
     my $self  = shift;
     my $role1 = shift;
@@ -37,10 +44,10 @@ sub _apply_form_components {
         if ( $role2->has_field( $field->name() ) ) {
 
             require Moose;
-            Moose->throw_error( "Role '"
+            Moose->throw_error( q{Role '}
                     . $role1->name()
-                    . "' has encountered a field conflict "
-                    . "during composition. This is fatal error and cannot be disambiguated."
+                    . q{' has encountered a field conflict }
+                    . 'during composition. This is fatal error and cannot be disambiguated.'
             );
         }
         else {
@@ -52,10 +59,10 @@ sub _apply_form_components {
         if ( $role2->has_group( $group->name() ) ) {
 
             require Moose;
-            Moose->throw_error( "Role '"
+            Moose->throw_error( q{Role '}
                     . $role1->name()
-                    . "' has encountered a group conflict "
-                    . "during composition. This is fatal error and cannot be disambiguated."
+                    . q{' has encountered a group conflict }
+                    . 'during composition. This is fatal error and cannot be disambiguated.'
             );
         }
         else {
@@ -63,6 +70,7 @@ sub _apply_form_components {
         }
     }
 }
+## use critic
 
 1;
 

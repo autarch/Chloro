@@ -1,8 +1,12 @@
 package Chloro::Trait::Role;
 
-use Moose::Role;
-
+use strict;
+use warnings;
 use namespace::autoclean;
+
+our $VERSION = '0.07';
+
+use Moose::Role;
 
 with 'Chloro::Role::Trait::HasFormComponents';
 

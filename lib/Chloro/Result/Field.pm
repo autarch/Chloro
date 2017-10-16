@@ -1,9 +1,13 @@
 package Chloro::Result::Field;
 
+use strict;
+use warnings;
+use namespace::autoclean;
+
+our $VERSION = '0.07';
+
 use Moose;
 use MooseX::StrictConstructor;
-
-use namespace::autoclean;
 
 use Chloro::Types qw( ArrayRef Item NonEmptyStr );
 
@@ -23,7 +27,7 @@ has _errors => (
 
 has param_names => (
     is       => 'ro',
-    isa      => ArrayRef[NonEmptyStr],
+    isa      => ArrayRef [NonEmptyStr],
     required => 1,
 );
 
@@ -48,7 +52,7 @@ sub BUILD {
 }
 
 after add_error => sub {
-    my $self = shift;
+    my $self  = shift;
     my $error = shift;
 
     $error->_set_result($self);

@@ -1,8 +1,13 @@
+## no critic (Moose::RequireMakeImmutable)
 package Chloro::Trait::Role::Composite;
 
-use Moose::Role;
-
+use strict;
+use warnings;
 use namespace::autoclean;
+
+our $VERSION = '0.07';
+
+use Moose::Role;
 
 use Moose::Util::MetaRole;
 use Moose::Util qw( does_role );
@@ -17,7 +22,7 @@ sub _merge_form_components {
 }
 
 sub _merge {
-    my $self = shift;
+    my $self  = shift;
     my $thing = shift;
 
     my $pl_thing = $thing . 's';
@@ -38,11 +43,11 @@ sub _merge {
             next if $seen{$name} == $thing;
 
             require Moose;
-            Moose->throw_error( "Role '"
+            Moose->throw_error( q{Role '}
                     . $self->name()
-                    . "' has encountered a Chloro $thing conflict "
-                    . "during composition. This is a fatal error and "
-                    . "cannot be disambiguated." );
+                    . q{' has encountered a Chloro $thing conflict }
+                    . 'during composition. This is a fatal error and '
+                    . 'cannot be disambiguated.' );
         }
 
         $seen{$name} = $thing;
@@ -66,10 +71,8 @@ around apply_params => sub {
     $self = Moose::Util::MetaRole::apply_metaroles(
         for            => $self,
         role_metaroles => {
-            application_to_class =>
-                ['Chloro::Trait::Application::ToClass'],
-            application_to_role =>
-                ['Chloro::Trait::Application::ToRole'],
+            application_to_class => ['Chloro::Trait::Application::ToClass'],
+            application_to_role  => ['Chloro::Trait::Application::ToRole'],
         },
     );
 

@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
+our $VERSION = '0.07';
+
 use base 'MooseX::Types::Combine';
 
 __PACKAGE__->provide_types_from(
@@ -13,3 +15,5 @@ __PACKAGE__->provide_types_from(
         Chloro::Types::Internal
         )
 );
+
+1;

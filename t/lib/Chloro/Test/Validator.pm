@@ -1,6 +1,8 @@
 package Chloro::Test::Validator;
 
 use Moose;
+use namespace::autoclean;
+
 use Chloro;
 
 use Chloro::Types qw( Int );
@@ -16,6 +18,7 @@ field max => (
     validator => '_max_greater_than_min',
 );
 
+## no critic (Subroutines::ProhibitUnusedPrivateSubroutines)
 sub _max_greater_than_min {
     my $self   = shift;
     my $value  = shift;
@@ -26,6 +29,7 @@ sub _max_greater_than_min {
 
     return 'The max value must be greater than the min value.';
 }
+## use critic
 
 __PACKAGE__->meta()->make_immutable;
 

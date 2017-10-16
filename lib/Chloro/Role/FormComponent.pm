@@ -1,8 +1,12 @@
 package Chloro::Role::FormComponent;
 
-use Moose::Role;
-
+use strict;
+use warnings;
 use namespace::autoclean;
+
+our $VERSION = '0.07';
+
+use Moose::Role;
 
 use Chloro::Types qw( NonEmptyStr );
 

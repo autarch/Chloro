@@ -1,5 +1,11 @@
 {{$NEXT}}
 
+[BUG FIXES]
+
+- Remove (undeclared) dependency on List::MoreUtils. Reported by Slaven
+  Rezić. RT #123295.
+
+
 0.06     2011-07-29
 
 [BUG FIXES]

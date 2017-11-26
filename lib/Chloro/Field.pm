@@ -130,6 +130,8 @@ __PACKAGE__->meta()->make_immutable();
 
 __END__
 
+=for Pod::Coverage STORABLE_freeze STORABLE_thaw
+
 =head1 SYNOPSIS
 
 See L<Chloro>.

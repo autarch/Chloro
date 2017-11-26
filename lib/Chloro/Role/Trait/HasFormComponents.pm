@@ -89,6 +89,8 @@ sub _make_field {
 
 __END__
 
+=for Pod::Coverage add_field add_group
+
 =head1 DESCRIPTION
 
 This trait adds meta-information to classes and traits which C<use Chloro>.

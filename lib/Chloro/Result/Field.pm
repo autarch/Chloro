@@ -74,6 +74,8 @@ __PACKAGE__->meta()->make_immutable();
 
 __END__
 
+=for Pod::Coverage BUILD
+
 =head1 SYNOPSIS
 
     my $result = $resultset->result_for('field');

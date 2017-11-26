@@ -79,6 +79,8 @@ sub group {
 
 __END__
 
+=for Pod::Coverage field group init_meta
+
 =head1 SYNOPSIS
 
     package MyApp::Form::Login;

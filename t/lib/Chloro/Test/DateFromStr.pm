@@ -20,7 +20,6 @@ sub _extract_date {
     my $self   = shift;
     my $params = shift;
     my $prefix = shift;
-    my $field  = shift;
 
     my %keys = map { $_ => $_ } qw( year month day );
 

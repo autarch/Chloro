@@ -23,7 +23,6 @@ sub _max_greater_than_min {
     my $self   = shift;
     my $value  = shift;
     my $params = shift;
-    my $field  = shift;
 
     return if $value > $params->{min};
 

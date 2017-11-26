@@ -17,8 +17,6 @@ field foo => (
 sub _extract_foo {
     my $self   = shift;
     my $params = shift;
-    my $prefix = shift;
-    my $field  = shift;
 
     return $params->{foo};
 }

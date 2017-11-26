@@ -18,7 +18,6 @@ sub _extract_date {
     my $self   = shift;
     my $params = shift;
     my $prefix = shift;
-    my $field  = shift;
 
     my @keys = qw( year month day );
 

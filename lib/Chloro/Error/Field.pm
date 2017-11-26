@@ -1,9 +1,13 @@
 package Chloro::Error::Field;
 
+use strict;
+use warnings;
+use namespace::autoclean;
+
+our $VERSION = '0.07';
+
 use Moose;
 use MooseX::StrictConstructor;
-
-use namespace::autoclean;
 
 use Chloro::Field;
 
